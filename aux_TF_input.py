@@ -6,30 +6,15 @@
 
 #input
 
-def defContenedor():
-    X = int(input())
-    Y = int(input())
-    Z = int(input())
-    return (X,Y,Z)
-
-def defCajas():
-    # TO DO
-    nTipos = int(input())
-    contT = 0
-    arrCajas = []
-    def hashing():
-        if nTipos > 26:
-            return 
-        return contT + 64
-    for i in range(n):
-        X = int(input())
-        Y = int(input())
-        Z = int(input())
-    
-
-defContenedor()
-
-
+arrAux = []
+strConte = input("Dimensiones del contenedor: ")
+arrAux = strConte.split(" ")
+sizeCont = 0
+if len(arrAux) == 2:
+    x = int(arrAux[0])
+    y = int(arrAux[1])
+    sizeCont = (x,y)
+print(sizeCont)
 # In[ ]:
 
 
