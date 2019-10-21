@@ -1,9 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[3]:
-
-
 class Paralelepipedo:
     def __init__(self,largo, ancho, alto, Myid):
         self.largo = largo
@@ -23,60 +17,44 @@ class Paralelepipedo:
 a = [None]*3
 a = [1,1,1]
 MyRec = []
-nPLLPPD = 0
+nPLLPPD = []
 cont = 0
 Contenedores = []
-volumen = 0
 
 def leerTxD(cont):
     archivo = open("Entrada.txt","r")
     n = archivo.readlines()
     for i in n:
         contenedor = i
+        helpm = contenedor.split(" ")
         if cont == 0:
-            contenedor.split(" ")
-            contenedor_Ancho = contenedor[0]
-            contenedor_Largo = contenedor[2]
-            contenedor_Alto  = contenedor[4]
-            print("entra")
-            a[0] = int(contenedor_Ancho)
-            a[1] = int(contenedor_Largo)
-            a[2] = int(contenedor_Alto)
+            a[0] = int(helpm[0])
+            a[1] = int(helpm[1])
+            a[2] = int(helpm[2])
             
-            
-            volumen = int(contenedor_Ancho) * int(contenedor_Largo) * int(contenedor_Alto)
-            Contenedores.append([contenedor_Ancho,contenedor_Largo, contenedor_Alto, volumen])
+            volumen = a[0] * a[1] * a[2]
+            Contenedores.append([a[0],a[1], a[2], volumen])
 
 
         elif cont == 1:
-            nPLLPPD = contenedor[0]
+            nPLLPPD.append(int(helpm[0]))
         else:
-            MyRec.append([Paralelepipedo(contenedor[4],contenedor[6],contenedor[8],contenedor[2]+str(0))])
+            MyRec.append([Paralelepipedo(int(helpm[2]),int(helpm[3]),int(helpm[4]),helpm[1]+str(0))])
             q = int(contenedor[0])
             if q > 1:
                 for x in range(q-1):
-                    MyRec[cont-2].append(Paralelepipedo(contenedor[4],contenedor[6],contenedor[8],contenedor[2]+str(x+1)))
+                    MyRec[cont-2].append(Paralelepipedo(int(helpm[2]),int(helpm[3]),int(helpm[4]),helpm[1]+str(x+1)))
     
         cont +=1
         
         
 leerTxD(cont)
-print(contenedor_Ancho,contenedor_Largo,contenedor_Alto)
+print(a)
+print(nPLLPPD)
+#print(contenedor_Ancho,contenedor_Largo,contenedor_Alto)
 for x in range(len(MyRec)):
     for i in range(len(MyRec[x])):
         MyRec[x][i].display()
-        
-
-    
-
-
-# In[47]:
-
-
-MyRec = []
-Contenedores = []
-
-
 
 def Guardar():
     archivo = open("Archivo Salida", 'w+')
@@ -86,16 +64,18 @@ def Guardar():
     vd = 0 #Volumen disponible
     
     a = "Contenedores usados: " + str(p) + "\n" 
-    b = "Volumen disponible: " + str(vd) + "m2 \n"
-    c = "Volumen ocupado: " + str(vu) + "m2 \n"
+    b = "Volumen disponible: " + str(vd) + " m2 \n"
+    c = "Volumen ocupado: " + str(vu) + " m2 \n"
     d = "Cajas a transportar: " + str(n) + "\n"
     
     archivo.write(a+b+c+d)
-    archivo.write("Contenedor Formato Coordenadas Orientacion:")
-    for i in my
-    print("hola")
+    archivo.write("Contenedor Formato Coordenadas Orientacion:\n")
     
-    #for i in range(n):
+    for i in range(n):
+        for z in range(len(MyRec[i])):
+            archivo.write("%d\t\t\t%s\t\t\t%d%d\t\t\t%d\n"%(MyRec[i][z].Contenedor,MyRec[i][z].Myid,MyRec[i][z].Pos[0],MyRec[i][z].Pos[1],MyRec[i][z].rotacion))
+            print("salio")
         
 Guardar()
+
 
