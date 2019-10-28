@@ -22,9 +22,19 @@ class Paralelepipedo:
 a = [None]*3
 a = [1,1,1]
 MyRec = []
+Puestos = []
 nPLLPPD = []
 cont = 0
-Contenedores = []#arreglo de arrglo de alto,ancho,alto,volumen
+Contenedores = []#arreglo de arrglo de largo,ancho,alto,volumen
+Respuestas = [] #no es la respuesta jsjs
+
+def Ponido(x,y,z,cont):#basicamente algoritmo galvan
+    if len(Puesto) > cont:
+        if x+Puesto[cont].largo <= Contenedores[-1][0]:
+            ponido(x+Puesto[cont].largo,y,z,cont+1)
+        else:
+            MyRec[0].Pos = (x,y,z) #ponido(x+Puesto[cont].largo,y,z,cont+1)
+
 
 def leerTxD(cont):
     archivo = open("Entrada.txt","r")
@@ -51,18 +61,10 @@ def leerTxD(cont):
                     MyRec[cont-2].append(Paralelepipedo(int(helpm[2]),int(helpm[3]),int(helpm[4]),helpm[1]+str(x+1)))
     
         cont +=1
-    for i in range(len(MyRec)):
+    for i in range(len(MyRec)): ##se puede borrar despues
         for z in range(len(MyRec[i])):
-            MyRec[i][z].Pos = (random.randint(0,20),random.randint(0,20),random.randint(0,20))
-        
-"""        
-leerTxD(cont)
-print(a)
-print(nPLLPPD)
-#print(contenedor_Ancho,contenedor_Largo,contenedor_Alto)
-for x in range(len(MyRec)):
-    for i in range(len(MyRec[x])):
-        MyRec[x][i].display()"""
+            MyRec[i][z].Pos = (random.randint(0,0),random.randint(0,0),random.randint(0,0))
+
 
 def Guardar():
     archivo = open("Archivo Salida", 'w+')
@@ -100,6 +102,14 @@ def Display3D():
     dy = []
     dz = []
     
+    xCont = []
+    yCont = []
+    zCont = []
+    
+    dxCont = []
+    dyCont = []
+    dzCont = []
+    
     for i in range(len(MyRec)):
         for y in range(len(MyRec[i])):
             xpos.append(MyRec[i][y].Pos[0])
@@ -109,14 +119,28 @@ def Display3D():
             dx.append(MyRec[i][y].largo)
             dy.append(MyRec[i][y].ancho)
             dz.append(MyRec[i][y].alto)
+            
+    for i in range(len(Contenedores)):
+        xCont += [0 ,Contenedores[i][0]+ Contenedores[i][0]*i ,0 +Contenedores[i][0]*i,0 + Contenedores[i][0]*i,Contenedores[i][0] + Contenedores[i][0]*i ,Contenedores[i][0] + Contenedores[i][0]*i,0 +Contenedores[i][0]*i,Contenedores[i][0]+Contenedores[i][0]*i]  
+        yCont += [0 , 0,Contenedores[i][1] ,0,Contenedores[i][1], 0,Contenedores[i][1],Contenedores[i][1] ]
+        zCont += [0 , 0,0 ,Contenedores[i][2],0,Contenedores[i][2],Contenedores[i][2],Contenedores[i][2]]
         
+        
+        dxCont += [0.1               ,(-Contenedores[i][0]),0.1 ,(Contenedores[i][0]),0.1,(-Contenedores[i][0]),0.1 ,0.1]
+        dyCont += [0.1               ,0.1                  ,(-Contenedores[i][1]),0.1,0.1,0.1,(Contenedores[i][1]),0.1]
+        dzCont += [Contenedores[i][2],0.1                  ,0.1,0.1,(Contenedores[i][2]),0.1,0.1,(Contenedores[i][2])]
+                                      #Hasta este esta ok  ]
     
     ax1.set_xlabel('X')
     ax1.set_ylabel('Y')
     ax1.set_zlabel('Z')
     
     ax1.bar3d(xpos, ypos, zpos, dx, dy, dz, color = '#00ceaa')
+    ax1.bar3d(xCont, yCont, zCont, dxCont, dyCont, dzCont, color = 'Yellow')
+
     plt.show()
+    
+    
 leerTxD(cont)
 Guardar()
 Display3D()
