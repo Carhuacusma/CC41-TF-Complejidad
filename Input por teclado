@@ -8,6 +8,7 @@ def inputTeclado():
     Contenedores.append(alto) 
     
     n = int(input("Cantidad de cajas: "))
+    cont  = 0 #Validar la cantidad de cajas
     
     
     for i in range(n):
@@ -20,5 +21,12 @@ def inputTeclado():
         d = int(input("Cuantos tipos de la misma caja hay: "))
         
         for j in range(d):
-            MyRec.append(Paralelepipedo.display(Mid, x, y, z))   
+            MyRec.append(Paralelepipedo(Mid, x, y, z)) 
+            cont += 1
+            if cont == n:
+                break
+        
+        if cont == n:
+                break
+        
 inputTeclado()
