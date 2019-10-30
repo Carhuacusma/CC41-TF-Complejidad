@@ -1,0 +1,24 @@
+def inputTeclado():
+    largo = int(input("Ingrese el largo del contenedor: "))
+    ancho = int(input("Ingrese el ancho del contenedor: "))
+    alto  = int(input("Ingrese el alto  del contenedor: "))
+    
+    Contenedores.append(largo)
+    Contenedores.append(ancho)
+    Contenedores.append(alto) 
+    
+    n = int(input("Cantidad de cajas: "))
+    
+    
+    for i in range(n):
+        print("Ingrese las dimensiones de la caja: ")
+        
+        x = int(input("Ingrese el largo de la caja: "))
+        y = int(input("Ingrese el ancho de la caja: "))
+        z = int(input("Ingrese el alto de la caja: "))
+        Mid = input("Ingrese el tipo de la caja: ")
+        d = int(input("Cuantos tipos de la misma caja hay: "))
+        
+        for j in range(d):
+            MyRec.append(Paralelepipedo.display(Mid, x, y, z))   
+inputTeclado()
