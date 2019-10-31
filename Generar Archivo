@@ -1,0 +1,21 @@
+def GenerarArchivo():
+    nombreArchivo = input("Ingrese el nombre del archivo: ")
+    archivoGenerado = open(nombreArchivo)
+    n = random.randint(0,10) #Cantidad de cajas
+    
+    #Dimensiones del contenedor
+    largo = random.randint(0,50)
+    ancho = random.randint(0,50)
+    alto = random.randint(0,50)
+    
+    archivoGenerado.write(largo + " " + ancho + " "+ alto)
+    archivoGeneradp.write(n)
+    
+    #Generar las cajas 
+    for i in range(n):
+        tipo = random.randint(A,Z) #Tipo de la caja
+        c = random.randint(0, 10) #Cantidad de cajas del mismo tipo
+        x = random.randint(0,largo) #Largo de la caja
+        y = random.randint(0, ancho) #Ancho de la caja
+        z = random.randint(0, alto) #Alto de la caja
+        archivoGenerado.write(c + " " + tipo + " "+ x + " " + y + " " + z)
