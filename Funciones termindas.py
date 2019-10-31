@@ -121,6 +121,7 @@ def Display3D():
             dz.append(MyRec[i][y].alto)
             
     for i in range(len(Contenedores)):
+        #     0,0,0  x,0,0                                     0,y,0                   0,0,z 
         xCont += [0 ,Contenedores[i][0]+ Contenedores[i][0]*i ,0 +Contenedores[i][0]*i,0 + Contenedores[i][0]*i,Contenedores[i][0] + Contenedores[i][0]*i ,Contenedores[i][0] + Contenedores[i][0]*i,0 +Contenedores[i][0]*i,Contenedores[i][0]+Contenedores[i][0]*i]  
         yCont += [0 , 0,Contenedores[i][1] ,0,Contenedores[i][1], 0,Contenedores[i][1],Contenedores[i][1] ]
         zCont += [0 , 0,0 ,Contenedores[i][2],0,Contenedores[i][2],Contenedores[i][2],Contenedores[i][2]]
@@ -144,4 +145,3 @@ def Display3D():
 leerTxD(cont)
 Guardar()
 Display3D()
-            
