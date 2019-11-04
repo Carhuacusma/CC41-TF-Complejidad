@@ -2,6 +2,8 @@ import random
 import numpy as np
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d.art3d import Poly3DCollection, Line3DCollection
+
 
 class Paralelepipedo:
     def __init__(self,largo, ancho, alto, Myid):
@@ -63,7 +65,7 @@ def leerTxD(cont):
         cont +=1
     for i in range(len(MyRec)): ##se puede borrar despues
         for z in range(len(MyRec[i])):
-            MyRec[i][z].Pos = (random.randint(0,0),random.randint(0,0),random.randint(0,0))
+            MyRec[i][z].Pos = (random.randint(0,1),random.randint(0,1),random.randint(0,1))
 
 
 def Guardar():
@@ -121,23 +123,24 @@ def Display3D():
             dz.append(MyRec[i][y].alto)
             
     for i in range(len(Contenedores)):
-        #     0,0,0  x,0,0                                     0,y,0                   0,0,z 
-        xCont += [0 ,Contenedores[i][0]+ Contenedores[i][0]*i ,0 +Contenedores[i][0]*i,0 + Contenedores[i][0]*i,Contenedores[i][0] + Contenedores[i][0]*i ,Contenedores[i][0] + Contenedores[i][0]*i,0 +Contenedores[i][0]*i,Contenedores[i][0]+Contenedores[i][0]*i]  
-        yCont += [0 , 0,Contenedores[i][1] ,0,Contenedores[i][1], 0,Contenedores[i][1],Contenedores[i][1] ]
-        zCont += [0 , 0,0 ,Contenedores[i][2],0,Contenedores[i][2],Contenedores[i][2],Contenedores[i][2]]
+        extra = Contenedores[i][0]*i
+        #     0,0,0  x,0,0                      0,y,0             0,0,z                        x,y,0                      x,0,z                     0,y,z               x,y,z
+        xCont += [0 ,Contenedores[i][0] + extra,0 +extra          ,0 + extra                  ,Contenedores[i][0] + extra,Contenedores[i][0] + extra,0 + extra         ,Contenedores[i][0]+extra,Contenedores[i][0] + extra,0                 ,0]  
+        yCont += [0, 0                        ,Contenedores[i][1],0                          ,Contenedores[i][1]        ,0                         ,Contenedores[i][1],Contenedores[i][1]       ,0                         ,Contenedores[i][1],Contenedores[i][1]  ]
+        zCont += [0, 0                        ,0                 ,Contenedores[i][2]         ,0                         ,Contenedores[i][2]        ,Contenedores[i][2],Contenedores[i][2]       ,0                         ,0                 ,Contenedores[i][2] ]
         
-        
-        dxCont += [0.1               ,(-Contenedores[i][0]),0.1 ,(Contenedores[i][0]),0.1,(-Contenedores[i][0]),0.1 ,0.1]
-        dyCont += [0.1               ,0.1                  ,(-Contenedores[i][1]),0.1,0.1,0.1,(Contenedores[i][1]),0.1]
-        dzCont += [Contenedores[i][2],0.1                  ,0.1,0.1,(Contenedores[i][2]),0.1,0.1,(Contenedores[i][2])]
+                 #0,0,0               x,0,0                 0,y,0                0,0,z                 x,y,0                x,0,z                0,y,z               x,y,z 
+        dxCont += [0.1               ,(-Contenedores[i][0]),0.1                  ,(Contenedores[i][0]),0.1                 ,0.1                  ,0.1                 ,0.1    ,0.1               ,Contenedores[i][0],Contenedores[i][0]]
+        dyCont += [0.0001,0.0001     ,(-Contenedores[i][1]),0.0001              ,0.0001              ,0.0001        ,(-Contenedores[i][1]),(-Contenedores[i][1]),Contenedores[i][1],0.0001            ,0.0001]
+        dzCont += [Contenedores[i][2],0.1                  ,0.1                  ,0.1                 ,(Contenedores[i][2]),(-Contenedores[i][2]),0.1                 ,0.1    ,0.1               ,0.1               ,0.1]
                                       #Hasta este esta ok  ]
     
     ax1.set_xlabel('X')
     ax1.set_ylabel('Y')
     ax1.set_zlabel('Z')
     
-    ax1.bar3d(xpos, ypos, zpos, dx, dy, dz, color = '#00ceaa')
-    ax1.bar3d(xCont, yCont, zCont, dxCont, dyCont, dzCont, color = 'Yellow')
+    ax1.bar3d(xpos, ypos, zpos, dx, dy, dz, color = '#00ceaa', alpha = '0.1')
+    ax1.bar3d(xCont, yCont, zCont, dxCont, dyCont, dzCont, color = 'magenta', alpha = 0.0)
 
     plt.show()
     
