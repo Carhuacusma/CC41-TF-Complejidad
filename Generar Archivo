@@ -1,21 +1,53 @@
+import random
+
 def GenerarArchivo():
     nombreArchivo = input("Ingrese el nombre del archivo: ")
-    archivoGenerado = open(nombreArchivo)
-    n = random.randint(0,10) #Cantidad de cajas
+    archivoGenerado = open(nombreArchivo, 'w+')
+    n = random.randint(1,10) #Cantidad de cajas
     
     #Dimensiones del contenedor
     largo = random.randint(0,50)
     ancho = random.randint(0,50)
     alto = random.randint(0,50)
     
-    archivoGenerado.write(largo + " " + ancho + " "+ alto)
-    archivoGeneradp.write(n)
+    #Convertir a string las variables para poder escribirlas en el archivo
+    la = str(largo)
+    an = str(ancho)
+    al = str(alto)
+    nn = str(n)
+    
+    archivoGenerado.write(la + " " + an + " "+ al + "\n")
+    archivoGenerado.write(nn + "\n")
     
     #Generar las cajas 
-    for i in range(n):
-        tipo = random.randint(A,Z) #Tipo de la caja
-        c = random.randint(0, 10) #Cantidad de cajas del mismo tipo
+    tipo = 65 #Tipo de la caja
+    
+    for i in range(n):        
+        if i == 0:
+            c = random.randint(1, n) #Cantidad de cajas del mismo tipo
+        
+        else: 
+            if n - c > 0:
+                g = n - c
+                c = random.randint(1, g) #Cantidad de cajas del mismo tipo
+            
+            else:
+                break
+            
         x = random.randint(0,largo) #Largo de la caja
         y = random.randint(0, ancho) #Ancho de la caja
         z = random.randint(0, alto) #Alto de la caja
-        archivoGenerado.write(c + " " + tipo + " "+ x + " " + y + " " + z)
+        
+        #Convertir a string las variables para poder escribirlas en el archivo
+        a = str(c)
+        b = str(x)
+        d = str(y)
+        e = str(z)
+        t = chr(tipo)
+        
+        tipo += 1
+        archivoGenerado.write(a + " "+ t + " "+ b + " " + d + " " + e + "\n")
+        
+        
+        
+GenerarArchivo()    
