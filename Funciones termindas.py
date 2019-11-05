@@ -21,21 +21,39 @@ class Paralelepipedo:
 #caja = Paralelepipedo(0,1,2)  
 #print(caja.largo,caja.ancho,caja.alto)
 
-a = [None]*3
-a = [1,1,1]
 MyRec = []
 Puestos = []
 nPLLPPD = []
-cont = 0
+cont = [0]
 Contenedores = []#arreglo de arrglo de largo,ancho,alto,volumen
 Respuestas = [] #no es la respuesta jsjs
-
-def Ponido(x,y,z,cont):#basicamente algoritmo galvan
-    if len(Puesto) > cont:
-        if x+Puesto[cont].largo <= Contenedores[-1][0]:
-            ponido(x+Puesto[cont].largo,y,z,cont+1)
+cont = 0
+Ulti = [0,0,0] # ultimas posiciones usadas x,y,z
+def Ponido(ulti,cont):#basicamente algoritmo galvan // le pasas las ultimas coordenas de cada eje
+    if len(MyRec) > cont[0]:
+        #x
+        if ulti[0] + MyRec[cont[0]].largo <= Contenedores[-1][0]:
+            MyRec[cont[0]].Pos = (ulti[0] + MyRec[cont[0]].largo,ulti[1],ulti[2]) #ponido(x+Puesto[cont].largo,y,z,cont+1
+            ulti[0] += MyRec[cont[0]].largo
+        elif ulti[0] + MyRec[cont[0]].largo > Contenedores[-1][0]:
+            ulti[0] = 0
+            Ponido(ulti,cont)
+        #y   
+        elif ulti[1] + MyRec[cont].ancho <= Contenedores[-1][1]:
+            MyRec[cont[0]].Pos  = (ulti[0],ulti[1] + MyRec[cont[0]].ancho,ulti[2])
+            ulti[1] += MyRec[cont[0]].ancho
+        elif ulti[1] + MyRec[cont[0]].ancho > Contenedores[-1][1]:
+            ulti[1] = 0 
+            Ponido(ulti,cont)
+        #Z   
+        elif ulti[2] + MyRec[cont].alto <= Contenedores[-1][2]:
+            MyRec[cont[0]].Pos  = (ulti[0],ulti[1],ulti[2] + MyRec[cont[0]].alto)
+            ulti[2] += MyRec[cont[0]].alto
+        elif ulti[2] + MyRec[cont[0]].ancho > Contenedores[-1][2]:
+            ulti[2] = 0
+            Ponido(ulti,cont)
         else:
-            MyRec[0].Pos = (x,y,z) #ponido(x+Puesto[cont].largo,y,z,cont+1)
+            ponido(x+Puesto[cont[0]].largo,y,z,cont+1)#cuidado con el cont+1 hmm
 
 
 def leerTxD(cont):
@@ -139,8 +157,8 @@ def Display3D():
     ax1.set_ylabel('Y')
     ax1.set_zlabel('Z')
     
-    ax1.bar3d(xpos, ypos, zpos, dx, dy, dz, color = '#00ceaa', alpha = '0.1')
-    ax1.bar3d(xCont, yCont, zCont, dxCont, dyCont, dzCont, color = 'magenta', alpha = 0.0)
+    ax1.bar3d(xpos, ypos, zpos, dx, dy, dz, color = '#00ceaa', alpha = '0.9')
+    ax1.bar3d(xCont, yCont, zCont, dxCont, dyCont, dzCont, color = 'magenta', alpha = 0.5)
 
     plt.show()
     
