@@ -1,0 +1,48 @@
+def AlgoritmoNatalia(Ancho, Alto, Largo, MyRec):
+    
+    #Representación del contenedor y su espacio disponible
+    EjeX = [0] * Largo
+    EjeY = [0] * Ancho
+    EjeZ = [0] * Alto
+    
+    #Variables:
+    v = Ancho * Alto * Largo     #volumen del contenedor
+    vo = 0                       #volumen ocupado del contenedor
+    vd = 0                       #volumen disponible del contenedor
+    cn = []                      #Cajas que no entran en el contenedor
+    cc = []                      #Cajas que están en el contenedor
+    c = 0                        #Cantidad de contenedores usados
+    m = len(cc)                  #Cantidad de cajas a transportar/encuentran en el contenedor
+    
+    #Colocar las cajas:
+    #Aquí no sé muy bien qué hacer todavia 
+    
+    #Forma 1 de obtener el vo
+    for i in range(m):
+        vo += cc[i].ancho * cc[i].largo * cc[i].alto
+    
+    
+    #Forma 2 de obtener el vo
+    contx = 0
+    conty = 0
+    contz = 0
+    
+    for i in range(len(EjeX)):
+        if EjeX[i] == 1:
+            contx += 1
+    
+    for i in range(len(EjeY)):
+        if EjeY[i] == 1:
+            conty += 1
+            
+    for i in range(len(EjeZ)):
+        if EjeZ[i] == 1:
+            contz += 1
+    
+    vo = contx * conty * contz
+    
+    #Obtener el vd
+    vd = v - vo
+    
+    return vo, c, vd, m
+    
