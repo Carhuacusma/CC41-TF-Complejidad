@@ -52,7 +52,19 @@ def AlgoritmoNatalia(Ancho, Alto, Largo, MyRec, cc, cn):
                 vd -= vc
         
         else:
-            cn.append(MyRec[i])
+            for j in range(len(cn)):
+                avc = cn[j].ancho * cn[j].alto * cn[j].largo
+                if avc <= vd:
+                    if cn[i].ancho <= dx && cn[j].largo <= dy && cn[i].alto <= dz:
+                        ColocarCaja(EjeX, cn[j].ancho)
+                        ColocarCaja(EjeY, cn[j].largo)
+                        ColocarCaja(EjeZ, cn[j].alto)
+                        cc.append(cn[i])
+                        del cn[i]
+                        vd -= avc
+                
+                else:
+                    cn.append(MyRec[i])
     
     
     #Forma 1 de obtener el vo
