@@ -1,6 +1,7 @@
 import heapq as hq
 
-cajas  = [] #Cola de cajas donde se guardarán las cajas que no entren en el contenedor
+cn = []     #Cajas que no entran en el contenedor
+cc = []     #Cajas que están en el contenedor
 
 def BuscarEspacioDisponible(EjeA):
     d = 0 #Espacio disponible
@@ -20,7 +21,7 @@ def ColocarCaja(EjeA, dimension):
     for j in range(dimension):
         EjeA[j] = 1
 
-def AlgoritmoNatalia(Ancho, Alto, Largo, MyRec, cajas):
+def AlgoritmoNatalia(Ancho, Alto, Largo, MyRec, cc, cn):
     
     #Representación del contenedor y su espacio disponible
     EjeX = [0] * Largo
@@ -31,14 +32,12 @@ def AlgoritmoNatalia(Ancho, Alto, Largo, MyRec, cajas):
     v = Ancho * Alto * Largo     #volumen del contenedor
     vo = 0                       #volumen ocupado del contenedor
     vd = v                       #volumen disponible del contenedor
-    cn = []                      #Cajas que no entran en el contenedor
-    cc = []                      #Cajas que están en el contenedor
     c = 0                        #Cantidad de contenedores usados
     m = len(cc)                  #Cantidad de cajas a transportar/encuentran en el contenedor
     
     #Colocar las cajas: Aquí no sé muy bien qué hacer todavia 
     for i in range(len(MyRec)):
-        vc = MyRec[i].largo * MyRec[i].alto * MyRec[i].ancho
+        vc = MyRec[i].largo * MyRec[i].alto * MyRec[i].ancho #Volumen de la caja
         
         if vc <= vd:
             dx = BuscarEspacioDisponible(EjeX)
@@ -49,9 +48,11 @@ def AlgoritmoNatalia(Ancho, Alto, Largo, MyRec, cajas):
                 ColocarCaja(EjeX, MyRec[i].ancho)
                 ColocarCaja(EjeY, MyRec[i].largo)
                 ColocarCaja(EjeZ, MyRec[i].alto)
+                cc.append(MyRec[i])
+                vd -= vc
         
         else:
-            cajas.append(MyRec[i])
+            cn.append(MyRec[i])
     
     
     #Forma 1 de obtener el vo
