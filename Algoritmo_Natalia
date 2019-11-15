@@ -1,4 +1,26 @@
-def AlgoritmoNatalia(Ancho, Alto, Largo, MyRec):
+import heapq as hq
+
+cajas  = [] #Cola de cajas donde se guardarán las cajas que no entren en el contenedor
+
+def BuscarEspacioDisponible(EjeA):
+    d = 0 #Espacio disponible
+    for i in range(len(EjeA)):
+        if EjeA[i] == 0:
+            d += 1
+    return d
+
+def ColocarCaja(EjeA, dimension):
+    e = 0
+    for i in range(len(A)):
+        if EjeA[i] == 0:
+            e = 1
+            break
+    
+    j = e 
+    for j in range(dimension):
+        EjeA[j] = 1
+
+def AlgoritmoNatalia(Ancho, Alto, Largo, MyRec, cajas):
     
     #Representación del contenedor y su espacio disponible
     EjeX = [0] * Largo
@@ -8,14 +30,29 @@ def AlgoritmoNatalia(Ancho, Alto, Largo, MyRec):
     #Variables:
     v = Ancho * Alto * Largo     #volumen del contenedor
     vo = 0                       #volumen ocupado del contenedor
-    vd = 0                       #volumen disponible del contenedor
+    vd = v                       #volumen disponible del contenedor
     cn = []                      #Cajas que no entran en el contenedor
     cc = []                      #Cajas que están en el contenedor
     c = 0                        #Cantidad de contenedores usados
     m = len(cc)                  #Cantidad de cajas a transportar/encuentran en el contenedor
     
-    #Colocar las cajas:
-    #Aquí no sé muy bien qué hacer todavia 
+    #Colocar las cajas: Aquí no sé muy bien qué hacer todavia 
+    for i in range(len(MyRec)):
+        vc = MyRec[i].largo * MyRec[i].alto * MyRec[i].ancho
+        
+        if vc <= vd:
+            dx = BuscarEspacioDisponible(EjeX)
+            dy = BuscarEspacioDisponible(EjeY)
+            dz = BuscarEspacioDisponible(EjeZ)
+            
+            if MyRec[i].ancho <= dx && MyRec[i].largo <= dy &&  MyRec[i].alto <= dz:
+                ColocarCaja(EjeX, MyRec[i].ancho)
+                ColocarCaja(EjeY, MyRec[i].largo)
+                ColocarCaja(EjeZ, MyRec[i].alto)
+        
+        else:
+            cajas.append(MyRec[i])
+    
     
     #Forma 1 de obtener el vo
     for i in range(m):
@@ -45,4 +82,10 @@ def AlgoritmoNatalia(Ancho, Alto, Largo, MyRec):
     vd = v - vo
     
     return vo, c, vd, m
+    
+    
+    
+    
+    
+    
     
