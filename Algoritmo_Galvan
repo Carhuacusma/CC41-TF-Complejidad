@@ -29,35 +29,64 @@ Contenedores = []#arreglo de arrglo de largo,ancho,alto,volumen
 Respuestas = [] #no es la respuesta jsjs
 cont = 0
 Ulti = [0,0,0] # ultimas posiciones usadas x,y,z
-def Ponido(ulti,cont):#basicamente algoritmo galvan // le pasas las ultimas coordenas de cada eje
-    if len(MyRec) > cont[0]:
-        #x
-        if ulti[0] + MyRec[cont[0]].largo <= Contenedores[-1][0]:
-            MyRec[cont[0]].Pos = (ulti[0] + MyRec[cont[0]].largo,ulti[1],ulti[2]) #ponido(x+Puesto[cont].largo,y,z,cont+1
-            ulti[0] += MyRec[cont[0]].largo
-        elif ulti[0] + MyRec[cont[0]].largo > Contenedores[-1][0]:
-            ulti[0] = 0
-            Ponido(ulti,cont)
-        #y   
-        elif ulti[1] + MyRec[cont].ancho <= Contenedores[-1][1]:
-            MyRec[cont[0]].Pos  = (ulti[0],ulti[1] + MyRec[cont[0]].ancho,ulti[2])
-            ulti[1] += MyRec[cont[0]].ancho
-        elif ulti[1] + MyRec[cont[0]].ancho > Contenedores[-1][1]:
-            ulti[1] = 0 
-            Ponido(ulti,cont)
-        #Z   
-        elif ulti[2] + MyRec[cont].alto <= Contenedores[-1][2]:
-            MyRec[cont[0]].Pos  = (ulti[0],ulti[1],ulti[2] + MyRec[cont[0]].alto)
-            ulti[2] += MyRec[cont[0]].alto
-        elif ulti[2] + MyRec[cont[0]].ancho > Contenedores[-1][2]:
-            ulti[2] = 0
-            Ponido(ulti,cont)
-        else:
-            ponido(x+Puesto[cont[0]].largo,y,z,cont+1)#cuidado con el cont+1 hmm
 
 
+
+def Ponido(cont):#basicamente algoritmo galvan // le pasas las ultimas coordenas de cada eje
+    towers = []
+    
+    def Rotacion():
+        n = len(MyRec)
+        for i in range(n):
+            for h in range(len(MyRec[i])):
+                x = MyRec[i][h].largo
+                y = MyRec[i][h].ancho
+                z = MyRec[i][h].alto
+                orden = [x,y,z] #Preguntar por la rotacion
+                orden.sort(reverse=True)
+                MyRec[i][h].largo = orden[0]
+                MyRec[i][h].ancho = orden[1]
+                MyRec[i][h].alto  = orden[2]
+
+
+    def Eachtower(Contenedor,Pos,i): #COnstruye toda la torre
+        altura = 0
+        for x in range(len(MyRec)):
+            for h in range(len(MyRec[x])):
+                if altura + MyRec[x][h].alto <= Contenedor[-1][2]:
+                    altura += MyRec[x][h].alto 
+                    MyRec[x][h].Pos = (Pos[0],Pos[1],altura)
+                    #agregar a tower para ordenar despues.
+                    i[0] +=1
+                else: return
+            
+    def towers(Contenedor):
+        i = [0]
+        LineStart = MyRec[0][0]
+        x = [0]
+        y = [0]
+        for p in range(len(MyRec)):
+            for h in range(len(MyRec[p])):
+                pos = [x[0],y[0],0]
+                Eachtower(Contenedor,pos,i)
+                if (x[0] + MyRec[p][h].largo) <= Contenedor[-1][0]:
+                    x[0] += MyRec[p][h].largo
+
+                else:
+                    x[0] = 0 
+                    if y[0] + MyRec[p][h].ancho <= Contenedor[-1][1]:
+                        y[0] += LineStart.ancho
+                        LineStart = MyRec[p][h]
+                    else:
+                        Contenedor.append(Contenedor[0])
+                i[0] +=1
+    Rotacion()
+    towers(Contenedores)
+    
+            
+    
 def leerTxD(cont):
-    archivo = open("Entrada.txt","r")
+    archivo = open("conse","r")
     n = archivo.readlines() 
     for i in n:
         contenedor = i
@@ -81,9 +110,9 @@ def leerTxD(cont):
                     MyRec[cont-2].append(Paralelepipedo(int(helpm[2]),int(helpm[3]),int(helpm[4]),helpm[1]+str(x+1)))
     
         cont +=1
-    for i in range(len(MyRec)): ##se puede borrar despues
-        for z in range(len(MyRec[i])):
-            MyRec[i][z].Pos = (random.randint(0,1),random.randint(0,1),random.randint(0,1))
+    #for i in range(len(MyRec)): ##se puede borrar despues
+     #   for z in range(len(MyRec[i])):
+      #      MyRec[i][z].Pos = (random.randint(0,10),random.randint(0,10),random.randint(0,10))
 
 
 def Guardar():
@@ -107,7 +136,7 @@ def Guardar():
     
     for i in range(n):
         for z in range(len(MyRec[i])):
-            archivo.write("%d\t\t\t%s\t\t\t%d%d\t\t\t%d\n"%(MyRec[i][z].Contenedor,MyRec[i][z].Myid,MyRec[i][z].Pos[0],MyRec[i][z].Pos[1],MyRec[i][z].rotacion))
+            archivo.write("%d\t\t\t%s\t\t\t%d %d %d\t\t\t%d\n"%(MyRec[i][z].Contenedor,MyRec[i][z].Myid,MyRec[i][z].Pos[0],MyRec[i][z].Pos[1],MyRec[i][z].Pos[2],MyRec[i][z].rotacion))
             
             
 def Display3D():
@@ -156,13 +185,23 @@ def Display3D():
     ax1.set_xlabel('X')
     ax1.set_ylabel('Y')
     ax1.set_zlabel('Z')
-    
-    ax1.bar3d(xpos, ypos, zpos, dx, dy, dz, color = '#00ceaa', alpha = '0.9')
+#     color = ['green','yellow','blue','black','red','pink','orange','brown']
+    ax1.bar3d(xpos, ypos, zpos, dx, dy, dz, color = 'blue', alpha = '1')
     ax1.bar3d(xCont, yCont, zCont, dxCont, dyCont, dzCont, color = 'magenta', alpha = 0.5)
+    
+    
+    ax1.view_init(30, 120)
+    plt.draw()
+    plt.pause(.001)
 
     plt.show()
     
-    
+
 leerTxD(cont)
+Ponido(cont)
 Guardar()
+# for i in range(len(MyRec)):
+#     for g in range(len(MyRec[i])):
+#         print( MyRec[i][g].largo, MyRec[i][g].ancho, MyRec[i][g].alto)
 Display3D()
+        
