@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[3]:
+# In[20]:
 
 
 # arreglo = [ ind,
@@ -95,33 +95,64 @@ def kindaTetris(arreglo, indices, contenedor):
             # ------> [(id, pos), (id, pos), ...]
             # tamaño de la caja porque siempre es importante :) 
             sizeCaja = sizeRotacion(arr[i], j)
-            if len(waste[i][j]) < 2:
+            if len(waste[i][j]) == 2:
+                # ya se calculó, no hay pedo
+                return True
+            if waste[i][j] == None:
                 #si no existe ruta = primera vez que se utiliza esta pila
                 #entra: ? / funcion válida si tiene la ruta :( )
                 strRuta = "aux" + str(i) + "rot" + str(j) + ".txt"
                 # ejem: aux1rot0.txt
+                waste[i][j] = [aux(i,j)]
                 # se asume que no existe caja de mayores dimensiones que el contenedor
-                # si no existe pila, es porque no se ha acomodado nada en ese caso hipotético
+                # si no existe pila, es porque no se ha acomodado nada en ese caso hipotético ----------- BUT HAS IT????!!!!!
                 waste[i][j] = [(contenedor[0] - sizeCaja[0], contenedor[1] - sizeCaja[1], contenedor[2] - sizeCaja[2]), strRuta]
                 #pila:   idNum, (pos),  rot
                 pila = [arr[i], (0,0,0), j]
                 agregarFile(strRuta, pila)
-            elif waste[i][j] != None:
-                #ya hay una pila de cajas ordenadas en el caso hipotético
-                maxSpace, strRuta = waste[i][j]
+            elif waste[i-1][j] != None:
+                # ya hay una pila de cajas ordenadas en el caso hipotético hasta la caja anterior a la que
+                # se quiere agregar
+                maxSpace, strRuta = waste[i-1][j]
                 pos = (0,0,0)
-                # de forma lineal (kinda vectores canónicos)
                 for k in range(3):
                     if maxSpace[i] > sizeCaja[i]:
                         #x, y o z es candidato
-                        pos[k] = contenedor[k] - maxSpace[k]
                         #posiciona a la caja en el limite de x, y o z
-                        # REVISAR CAMBIOS DE POSICION !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
+                        # de forma kinda vectores canónicos
+                        for k1 in range(3):
+                            if k1 == k:
+                                pos[k] = contenedor[k] - maxSpace[k]
+                            else:
+                                pos[k1] = 0
+                        #posiciona a la caja en el limite de x o y o z
                         if entra(caja,waste[i][j]):
                             waste[i][j][0][k] -= sizeCaja[k]
-                            return True
-                        #--------------------------------------revisar qué debería retornar aux(i,j) ------- LLAMARLO
-                    
+                            for k1 in range(3):
+                                if k1 != k:
+                                    if sizeCaja[k1] > contenedor[k1] - maxSpace[k1]:
+                                        waste[i][j][0][k1] = contenedor[k1] - sizeCaja[k1] - pos[k1]
+                            # redefinir los nuevos waste de ser necesario
+                            return True     #--------------------------------------revisar qué debería retornar aux(i,j) ------- LLAMARLO
+                        if k == 0:
+                            # si está en x, toca mover en y
+                            pos[1] = contenedor[1] - maxSpace[1]
+                            if entra(caja,waste[i][j]):
+                                waste[i][j][0][k] = contenedor[k] - sizeCaja[k] - pos[k] 
+                                waste[i][j][0][1] = contenedor[1] - sizeCaja[1] - pos[1]
+                                return True
+
+
+# In[ ]:
+
+
+# PSEUDOCÓDIGO DE LO QUE DEBERÍA HACER AUX SI BACKTRACKING
+# PERO ÑÑÑ
+arr = [] # cajas en el contenedor
+def backtracking(caja, rotacion):
+    if backtracking(caja + 1, rotacion):
+        
+backtracking(0, 0)
 
 
 # In[4]:
@@ -138,10 +169,12 @@ ej = [5,4,3]
 escribirFile("ejemplo.txt", ej)
 
 
-# In[19]:
+# In[23]:
 
 
-aux = [None]
+waste = [[None]*6 for _ in range(5)]
+if waste[0][1] == None:
+    print("help")
 aux = []
 print(len(aux))
 
