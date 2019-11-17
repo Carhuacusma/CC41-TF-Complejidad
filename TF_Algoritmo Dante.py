@@ -65,12 +65,12 @@ def kindaTetris(arreglo, indices, contenedor):
             # inicializar para que sin cajas, el max es contenedor en sí
         dentro = []
         def entra(caja, auxWaste):
-            # caja = [id, (pos), rot]
+            # caja = [idNum, (pos), rot]
             # aux waste = [(max x, " y, " z), ruta]
             idCaja, pos, rot = caja
             sizeCaja = sizeRotacion(idCaja, rot)
             maxSize, ruta = auxWaste
-            f = open(ruta, "a+")
+            f = open(ruta, "r+")
             auxString = f.readlines()
             for linea in auxString:
                 # id pos.x pos.y pos.z size.x size.y size.z rot
@@ -79,28 +79,49 @@ def kindaTetris(arreglo, indices, contenedor):
                 posCajaF = int(lPx), int(lPy), int(lPz)
                 sizeCajaF = int(lSx), int(lSy), int(lSz)
                 if pos[0] + sizeCaja[0] <= posCajaF[0] + sizeCajaF[0] and pos[1] + sizeCaja[1] <= posCajaF[1] + sizeCajaF[1] and pos[2] + sizeCaja[2] <= posCaja[2] + sizeCajaF[2]:
+                    f.close()
                     return False
                 elif pos[0] + sizeCaja[0] > contenedor[0] or pos[1] + sizeCaja[1] > contenedor[1] or pos[2] + sizeCaja[2] > contenedor[2]:
+                    f.close()
                     return False
-                else:
-                    return True
-
+            f.close()
+            return True
+        
         def aux(i,j): # caja i, en la orientacion j
             # el objetivo es que busque ordenar la nueva caja
             # en la opcion donde el desperdicio es mayor
             # waste[i][j] = [(Max x, Max y, Max z), ruta para leer ]
             # -> texto en formato
             # ------> [(id, pos), (id, pos), ...]
+            # tamaño de la caja porque siempre es importante :) 
+            sizeCaja = sizeRotacion(arr[i], j)
             if len(waste[i][j]) < 2:
                 #si no existe ruta = primera vez que se utiliza esta pila
                 #entra: ? / funcion válida si tiene la ruta :( )
-                strRuta = "aux" + str(i) + "rot" + str(j)
-                
-                sizeCaja = sizeRotacion(i,j)
-                waste[i][j] = [(contenedor[0] - sizeCaja, contenedor[1], contenedor[2])]
-            else:
-                ind, size = indices[arr[i]]
-                
+                strRuta = "aux" + str(i) + "rot" + str(j) + ".txt"
+                # ejem: aux1rot0.txt
+                # se asume que no existe caja de mayores dimensiones que el contenedor
+                # si no existe pila, es porque no se ha acomodado nada en ese caso hipotético
+                waste[i][j] = [(contenedor[0] - sizeCaja[0], contenedor[1] - sizeCaja[1], contenedor[2] - sizeCaja[2]), strRuta]
+                #pila:   idNum, (pos),  rot
+                pila = [arr[i], (0,0,0), j]
+                agregarFile(strRuta, pila)
+            elif waste[i][j] != None:
+                #ya hay una pila de cajas ordenadas en el caso hipotético
+                maxSpace, strRuta = waste[i][j]
+                pos = (0,0,0)
+                # de forma lineal (kinda vectores canónicos)
+                for k in range(3):
+                    if maxSpace[i] > sizeCaja[i]:
+                        #x, y o z es candidato
+                        pos[k] = contenedor[k] - maxSpace[k]
+                        #posiciona a la caja en el limite de x, y o z
+                        # REVISAR CAMBIOS DE POSICION !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
+                        if entra(caja,waste[i][j]):
+                            waste[i][j][0][k] -= sizeCaja[k]
+                            return True
+                        #--------------------------------------revisar qué debería retornar aux(i,j) ------- LLAMARLO
+                    
 
 
 # In[4]:
