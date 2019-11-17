@@ -8,11 +8,22 @@
 #             ind ... ]
 # indices = [ ['A', (size.x,size.y,size.z)], 
 #             ['B', (size.x,size.y,size.z)], ...]
-def escribirFile(ruta, arr):
+def agregarFile(ruta, arr):
+    # arr formato:
+    # [[id, (pos), rot],
+    #  [id, (pos), rot], ...]
+    # archivo:
+    #  id pos.x pos.y pos.z size.x size.y size.z rot
+    #  id pos.x ...
     f = open(ruta,"a+")
-    for elem in arr:
-        aux = str(elem)
-        aux += " "
+    for caja in arr:
+        aux = str(caja[0]) + " " # id
+        f.write(aux)
+        posAux = caja[1]
+        for i in range(3):
+            aux = str(posAux[i]) + " "
+            f.write(aux)
+        aux = str(caja[2]) + "\n" # rot, salto de linea
         f.write(aux)
     f.close()
 
@@ -77,10 +88,16 @@ def kindaTetris(arreglo, indices, contenedor):
         def aux(i,j): # caja i, en la orientacion j
             # el objetivo es que busque ordenar la nueva caja
             # en la opcion donde el desperdicio es mayor
-            # waste[i][j] = [(Max x, Max y, Max z), [(id, pos), (id, pos), ...] ]
-            if i == 0:
-                #si es la primera caja que se está agregando
-                waste[i][j] = [(contenedor[0], contenedor[1], contenedor[2])]
+            # waste[i][j] = [(Max x, Max y, Max z), ruta para leer ]
+            # -> texto en formato
+            # ------> [(id, pos), (id, pos), ...]
+            if len(waste[i][j]) < 2:
+                #si no existe ruta = primera vez que se utiliza esta pila
+                #entra: ? / funcion válida si tiene la ruta :( )
+                strRuta = "aux" + str(i) + "rot" + str(j)
+                
+                sizeCaja = sizeRotacion(i,j)
+                waste[i][j] = [(contenedor[0] - sizeCaja, contenedor[1], contenedor[2])]
             else:
                 ind, size = indices[arr[i]]
                 
@@ -100,9 +117,10 @@ ej = [5,4,3]
 escribirFile("ejemplo.txt", ej)
 
 
-# In[16]:
+# In[19]:
 
 
-aux = "aux" + str(3) + ".txt"
-print(aux)
+aux = [None]
+aux = []
+print(len(aux))
 
