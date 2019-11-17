@@ -3,51 +3,60 @@ import heapq as hq
 cn = []     #Cajas que no entran en el contenedor
 cc = []     #Cajas que están en el contenedor
 
-def BuscarEspacioDisponible(EjeA):
+def BuscarEspacioDisponible(PlanoAB, dimensionA, dimensionB):
     d = 0 #Espacio disponible
-    for i in range(len(EjeA)):
-        if EjeA[i] == 0:
-            d += 1
+    for i in range(dimensionA):
+        for j in range(dimensionB):
+            if PlanoAB[i][j] == 0:
+                d += 1
     return d
 
-def ColocarCaja(EjeA, dimension):
+def ColocarCaja(PlanoAB, dimensionA, dimensionB, limiteA, limiteB):
     e = 0
-    for i in range(len(A)):
-        if EjeA[i] == 0:
-            e = 1
-            break
+    d = 0
+    for i in range(dimensionA):
+        for j in range(dimensionB):
+            if PlanoAB[i][j] == 0:
+                e = i
+                d = j
+                break
     
-    j = e 
-    for j in range(dimension):
-        EjeA[j] = 1
+    r = e 
+    k = d
+    for r in range(limiteA):
+        for k in range(limiteB):
+            PlanoAB[r][k] = 1
 
 def AlgoritmoNatalia(Ancho, Alto, Largo, MyRec, cc, cn):
     
     #Representación del contenedor y su espacio disponible
-    EjeX = [0] * Largo
-    EjeY = [0] * Ancho
-    EjeZ = [0] * Alto
-    
+    PlanoXY = [[0] * ancho for _ in range(largo)]
+    PlanoXZ = [[0] * ancho for _ in range(alto)]
+    PlanoYZ = [[0] * largo for _ in range(alto)]
+        
     #Variables:
     v = Ancho * Alto * Largo     #volumen del contenedor
     vo = 0                       #volumen ocupado del contenedor
     vd = v                       #volumen disponible del contenedor
     c = 0                        #Cantidad de contenedores usados
     m = len(cc)                  #Cantidad de cajas a transportar/encuentran en el contenedor
+    dxy = 0                      #Cantidad de espacio disponible en el plano xy
+    dxz = 0                      #Cantidad de espacio disponible en el plano xz
+    dyz = 0                      #Cantidad de espacio disponible en el plano yz
     
     #Colocar las cajas: Aquí no sé muy bien qué hacer todavia 
     for i in range(len(MyRec)):
         vc = MyRec[i].largo * MyRec[i].alto * MyRec[i].ancho #Volumen de la caja
         
         if vc <= vd:
-            dx = BuscarEspacioDisponible(EjeX)
-            dy = BuscarEspacioDisponible(EjeY)
-            dz = BuscarEspacioDisponible(EjeZ)
+            dxy = BuscarEspacioDisponible(PlanoXY, ancho, largo)
+            dyz = BuscarEspacioDisponible(PlanoYZ, largo, alto)
+            dxz = BuscarEspacioDisponible(PlanoXZ, ancho, alto)
             
-            if MyRec[i].ancho <= dx && MyRec[i].largo <= dy &&  MyRec[i].alto <= dz:
-                ColocarCaja(EjeX, MyRec[i].ancho)
-                ColocarCaja(EjeY, MyRec[i].largo)
-                ColocarCaja(EjeZ, MyRec[i].alto)
+            if MyRec[i].ancho <= dxy && MyRec[i].largo <= dyz &&  MyRec[i].alto <= dxz:
+                ColocarCaja(PlanoXY, ancho, largo, MyRec[i].ancho, MyRec[i].largo)
+                ColocarCaja(PlanoYZ, largo, alto, MyRec[i].largo, MyRec[i].alto)
+                ColocarCaja(PlanoXZ, ancho, largo, MyRec[i].ancho, MyRec[i].alto)
                 cc.append(MyRec[i])
                 vd -= vc
         
@@ -55,7 +64,7 @@ def AlgoritmoNatalia(Ancho, Alto, Largo, MyRec, cc, cn):
             for j in range(len(cn)):
                 avc = cn[j].ancho * cn[j].alto * cn[j].largo
                 if avc <= vd:
-                    if cn[i].ancho <= dx && cn[j].largo <= dy && cn[i].alto <= dz:
+                    if cn[i].ancho <= dxy && cn[j].largo <= dyz && cn[i].alto <= dxz:
                         ColocarCaja(EjeX, cn[j].ancho)
                         ColocarCaja(EjeY, cn[j].largo)
                         ColocarCaja(EjeZ, cn[j].alto)
