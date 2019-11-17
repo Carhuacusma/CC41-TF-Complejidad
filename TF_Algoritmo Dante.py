@@ -8,37 +8,27 @@
 #             ind ... ]
 # indices = [ ['A', (size.x,size.y,size.z)], 
 #             ['B', (size.x,size.y,size.z)], ...]
+def escribirFile(ruta, arr):
+    f = open(ruta,"a+")
+    for elem in arr:
+        aux = str(elem)
+        aux += " "
+        f.write(aux)
+    f.close()
+
 def kindaTetris(arreglo, indices, contenedor):
     n = len(arreglo)
     #        max med min
-    # rot 1:  X   Y   Z
-    # rot 2:  X   Z   Y
-    # rot 3:  Y   X   Z
-    # rot 4:  Y   Z   X
-    # rot 5:  Z   X   Y
-    # rot 6:  Z   Y   X
-    def dentroContenedor(arr):
-        nA = len(arr)
-        waste = [[None]*6 for _ in range(nA)]
-        # waste[rec i][orientacion] = menor desperdicio al guardar 
-        #                             todas las cajas hasta la caja i
-        #                             ( de arr )
-        #           = [(MAX espacio libre en X, " en Y, " en Z), [pila de rec (id, pos)]]
-        waste[0][j] = [(contenedor[0], contenedor[1], contenedor[2])]
-        dentro = []
-        
-        def sizesPorRotacion(idCaja, rot):
+    # rot 0:  X   Y   Z
+    # rot 1:  X   Z   Y
+    # rot 2:  Y   X   Z
+    # rot 3:  Y   Z   X
+    # rot 4:  Z   X   Y
+    # rot 5:  Z   Y   X
+    def sizeRotacion(idCaja, rot):
             og1, og2, og3 = indices[idCaja][1]
             sizeOG = [ og1, og2, og3]
             sizeOG.sort()
-            #de menor a mayor en sizeOG
-            #        max med min
-            # rot 1:  X   Y   Z
-            # rot 2:  X   Z   Y
-            # rot 3:  Y   X   Z
-            # rot 4:  Y   Z   X
-            # rot 5:  Z   X   Y
-            # rot 6:  Z   Y   X
             if rot == 1:
                 return (sizeOG[2], sizeOG[1], sizeOG[0])
             elif rot == 2:
@@ -51,32 +41,68 @@ def kindaTetris(arreglo, indices, contenedor):
                 return (sizeOG[1], sizeOG[0], sizeOG[2])
             elif rot == 6:
                 return (sizeOG[0], sizeOG[1], sizeOG[2])
-            
+    
+    def dentroContenedor(arr):
+        nA = len(arr)
+        waste = [[None]*6 for _ in range(nA)]
+        # waste[rec i][orientacion] = menor desperdicio al guardar 
+        #                             todas las cajas hasta la caja i
+        #                             ( de arr )
+        #           = [(MAX espacio libre en X, " en Y, " en Z), "ruta" para archivo con pila de rectangulos]
+        for j in range(nA):
+            waste[0][j] = [(contenedor[0], contenedor[1], contenedor[2])]
+            # inicializar para que sin cajas, el max es contenedor en sí
+        dentro = []
         def entra(caja, auxWaste):
-            # caja = (id, pos, rot)
-            idCaja, posX, posY, posZ, rot = caja
-            for c in auxWaste:
-                if pos[0] + size[0]
-                # comparar pos + size si entra dentro del contenedor (arreglo dentro)
+            # caja = [id, (pos), rot]
+            # aux waste = [(max x, " y, " z), ruta]
+            idCaja, pos, rot = caja
+            sizeCaja = sizeRotacion(idCaja, rot)
+            maxSize, ruta = auxWaste
+            f = open(ruta, "a+")
+            auxString = f.readlines()
+            for linea in auxString:
+                # id pos.x pos.y pos.z size.x size.y size.z rot
+                cajaF = linea.split(' ')
+                _, lPx, lPy, lPz, lSx, lSy, lSz = caja
+                posCajaF = int(lPx), int(lPy), int(lPz)
+                sizeCajaF = int(lSx), int(lSy), int(lSz)
+                if pos[0] + sizeCaja[0] <= posCajaF[0] + sizeCajaF[0] and pos[1] + sizeCaja[1] <= posCajaF[1] + sizeCajaF[1] and pos[2] + sizeCaja[2] <= posCaja[2] + sizeCajaF[2]:
+                    return False
+                elif pos[0] + sizeCaja[0] > contenedor[0] or pos[1] + sizeCaja[1] > contenedor[1] or pos[2] + sizeCaja[2] > contenedor[2]:
+                    return False
+                else:
+                    return True
+
         def aux(i,j): # caja i, en la orientacion j
             # el objetivo es que busque ordenar la nueva caja
             # en la opcion donde el desperdicio es mayor
             # waste[i][j] = [(Max x, Max y, Max z), [(id, pos), (id, pos), ...] ]
-            if waste[i][j] != None:
-                return
             if i == 0:
-                waste[i][j] = [(contenedor[0], contenedor[1], contenedor[2]),[]]
+                #si es la primera caja que se está agregando
+                waste[i][j] = [(contenedor[0], contenedor[1], contenedor[2])]
             else:
                 ind, size = indices[arr[i]]
+                
 
 
-# In[8]:
+# In[4]:
 
 
-ejemplo = [['A', (5,9,3)]]
-print(ejemplo)
-aux1, aux2, aux3 = ejemplo[0][1]
-arr = [aux1,aux2,aux3]
-arr.sort()
-print(arr)
+def escribirFile(ruta, arr):
+    f = open(ruta,"a+")
+    for elem in arr:
+        aux = str(elem)
+        aux += " \n"
+        f.write(aux)
+    f.close()
+ej = [5,4,3]
+escribirFile("ejemplo.txt", ej)
+
+
+# In[16]:
+
+
+aux = "aux" + str(3) + ".txt"
+print(aux)
 
