@@ -4,45 +4,14 @@
 # In[20]:
 
 
+import os
 # arreglo = [ ind,
 #             ind ... ]
 # indices = [ ['A', (size.x,size.y,size.z)], 
 #             ['B', (size.x,size.y,size.z)], ...]
-
-# ================================ FILES ===============================================
-    # arr formato:
-    # [[id, (pos), rot],
-    #  [id, (pos), rot], ...]
-    # archivo:
-    #  idNum pos.x pos.y pos.z size.x size.y size.z rot
-    #  idNum pos.x ...
-def copiarFile(rutaOG, rutaN):
-    fO = open(rutaOG,"r+")
-    fN = open(rutaN,"w+")
-    lineas = fO.readlines()
-    for linea in lineas:
-        print(linea)
-        fN.write(linea)
-    fO.close()
-    fN.close()
-copiarFile("ejemplo.txt", "auxEj.txt")
-    
-def agregarFile(ruta, arr):
-    f = open(ruta,"a+")
-    for caja in arr:
-        aux = str(caja[0]) + " " # id
-        f.write(aux)
-        posAux = caja[1]
-        for i in range(3):
-            aux = str(posAux[i]) + " "
-            f.write(aux)
-        aux = str(caja[2]) + "\n" # rot, salto de linea
-        f.write(aux)
-    f.close()
-# ================================ FILES ===============================================
-
 def kindaTetris(arreglo, indices, contenedor):
     n = len(arreglo)
+    
     #        max med min
     # rot 0:  X   Y   Z
     # rot 1:  X   Z   Y
@@ -66,6 +35,42 @@ def kindaTetris(arreglo, indices, contenedor):
                 return (sizeOG[1], sizeOG[0], sizeOG[2])
             elif rot == 6:
                 return (sizeOG[0], sizeOG[1], sizeOG[2])
+    # ================================ FILES ===============================================
+    # arr formato:
+    # [[id, (pos), rot],
+    #  [id, (pos), rot], ...]
+    # archivo:
+    #  idNum pos.x pos.y pos.z size.x size.y size.z rot
+    #  idNum pos.x ...
+    def copiarFile(rutaOG, rutaN):
+        fO = open(rutaOG,"r+")
+        fN = open(rutaN,"w+")
+        lineas = fO.readlines()
+        for linea in lineas:
+            print(linea)
+            fN.write(linea)
+        fO.close()
+        fN.close()
+
+    def agregarFile(ruta, arr):
+        f = open(ruta,"a+")
+        for caja in arr:
+            aux = str(caja[0]) + " " # id
+            f.write(aux)
+            posAux = caja[1]
+            for i in range(3):
+                aux = str(posAux[i]) + " "
+                f.write(aux)
+                #escrito: pos.x pos.y pos.z
+            size = sizeRotacion(int(caja[0]), int(caja[2]))
+            for dim in size:
+                aux = str(dim) + " "
+                f.write(aux)
+                #guarda el tamaño
+            aux = str(caja[2]) + "\n" # rot, salto de linea
+            f.write(aux)
+        f.close()
+    # ================================ FILES ===============================================
     
     def dentroContenedor(arr, actCont):
         # ordenar el "arr" dentro del actCont 
@@ -131,7 +136,7 @@ def kindaTetris(arreglo, indices, contenedor):
             jAux = 0 # rotacion calculada para caja i - 1
             for k in range(6):
                 #por cada una las rotaciones en las que pudo entrar la caja anterior
-                if waste[i-1][j] != None:
+                if waste[i-1][j] != None and waste[i-1][j][0] != False:
                     # si ya hay una pila de cajas ordenadas en el caso hipotético hasta la caja anterior, usamos esa
                     maxSpace, _ = waste[i-1][j]
                     jAuxCalc = j
@@ -145,10 +150,15 @@ def kindaTetris(arreglo, indices, contenedor):
                     jAux += 1
                 jAux -= 1
                 if not fine:
+                    waste[i-1][jAux] = [False]
                     return False, waste[i-1][jAux]
-            maxSpace, _ = waste[i-1][jAux]
+            maxSpace, strRutaPrevia = waste[i-1][jAux]
             
             pos = (0,0,0)
+            waste[i][j] = [pos, strRuta]
+            #INICIALIZAR WASTE[i][j] PORQUE DE AQUÍ NO SALE SIN RESPUESTA >:) 
+            copiarFile(strRutaPrevia, strRuta)
+            # poner en waste[i][j][1] los que ya están dentro
             for k in range(3):
                 #Las dimensiones en las que podría entrar
                 if maxSpace[k] > sizeCaja[k]:
@@ -161,6 +171,7 @@ def kindaTetris(arreglo, indices, contenedor):
                         else:
                             pos[k1] = 0
                     #posiciona a la caja en el limite de x o y o z
+                    caja = [arr[i], pos, j]
                     if entra(caja,waste[i-1][jAux]):+
                         waste[i][j][0][k] -= sizeCaja[k]
                         #Waste en k disminuye el tamaño de la nueva caja en k
@@ -171,15 +182,123 @@ def kindaTetris(arreglo, indices, contenedor):
                                 if sizeCaja[k1] > contenedor[k1] - maxSpace[k1]:
                                     waste[i][j][0][k1] = contenedor[k1] - sizeCaja[k1] - pos[k1]
                         #si entra, agregarlo oficialmente a la pila
-                        #------------------------APLICAR COPIAR FILE -----------------¡¡¡¡¡¡¡¡¡¡????""""""""""eRFESG
+                        #formato de agregarFile :!
+                        agregarFile(strRuta, [caja])
                         return True, waste[i][j]
                     if k == 0:
                         # si está en x, toca mover en y
                         pos[1] = contenedor[1] - maxSpace[1]
+                        #posiciona a la caja en el limite de x o y o z
+                        caja[1] = pos
                         if entra(caja,waste[i][j]):
-                            waste[i][j][0][k] = contenedor[k] - sizeCaja[k] - pos[k] 
-                            waste[i][j][0][1] = contenedor[1] - sizeCaja[1] - pos[1]
-                            return True
+                            #como siempre se hace con los límites... :'c ....................DEFECTO DEL ALGORITMO
+                            #................................................................OPCION: fuerza bruta y
+                            #................................................................un arreglo + calculo waste
+                            #................................................................kinda Skylines
+                            for k1 in range(3):
+                                #Redefenir los waste en las demás dimensiones
+                                if sizeCaja[k1] > contenedor[k1] - maxSpace[k1]:
+                                    waste[i][j][0][k1] = contenedor[k1] - sizeCaja[k1] - pos[k1]
+                            #formato de agregarFile :!
+                            agregarFile(strRuta, [caja])
+                            return True, waste[i][j]
+                        # no entró en la esquina max X, max Y... toca elevar
+                        pos[2] = contenedor[2] - maxSpace[2]
+                        #posiciona a la caja en el limite de x o y o z
+                        caja[1] = pos
+                        if entra(caja, waste[i][j]):
+                            for k1 in range(3):
+                                #Redefenir los waste en las demás dimensiones
+                                if sizeCaja[k1] > contenedor[k1] - maxSpace[k1]:
+                                    waste[i][j][0][k1] = contenedor[k1] - sizeCaja[k1] - pos[k1]
+                            agregarFile(strRuta, [caja])
+                            return True, waste[i][j]
+                    if k == 1:
+                        #está en y, so toca mover el x
+                        pos[0] = contenedor[0] - maxSpace[0]
+                        caja[1] = pos
+                        if entra(caja, waste[i][j]):
+                            for k1 in range(3):
+                                #Redefenir los waste en las demás dimensiones
+                                if sizeCaja[k1] > contenedor[k1] - maxSpace[k1]:
+                                    waste[i][j][0][k1] = contenedor[k1] - sizeCaja[k1] - pos[k1]
+                            agregarFile(strRuta, [caja])
+                            return True, waste[i][j]
+                        #no entró, toca elevar (snoop inu)
+                        pos[2] = contenedor[2] - maxSpace[2]
+                        caja[1] = pos
+                        if entra(caja, waste[i][j]):
+                            for k1 in range(3):
+                                #Redefenir los waste en las demás dimensiones
+                                if sizeCaja[k1] > contenedor[k1] - maxSpace[k1]:
+                                    waste[i][j][0][k1] = contenedor[k1] - sizeCaja[k1] - pos[k1]
+                            agregarFile(strRuta, [caja])
+                            return True, waste[i][j]
+                    if k == 2:
+                        #está en z, so... mover en x
+                        pos[0] = contenedor[0] - maxSpace[0]
+                        caja[1] = pos
+                        if entra(caja, waste[i][j]):
+                            for k1 in range(3):
+                                #Redefenir los waste en las demás dimensiones
+                                if sizeCaja[k1] > contenedor[k1] - maxSpace[k1]:
+                                    waste[i][j][0][k1] = contenedor[k1] - sizeCaja[k1] - pos[k1]
+                            agregarFile(strRuta, [caja])
+                            return True, waste[i][j]
+                        #no entró, toca TELL ME Y !!!!!!!!!!1 (AIN'T NOTHING BUT A HEARTACHE!)
+                        pos[1] = contenedor[1] - maxSpace[1]
+                        caja[1] = pos
+                        if entra(caja, waste[i][j]):
+                            for k1 in range(3):
+                                #Redefenir los waste en las demás dimensiones
+                                if sizeCaja[k1] > contenedor[k1] - maxSpace[k1]:
+                                    waste[i][j][0][k1] = contenedor[k1] - sizeCaja[k1] - pos[k1]
+                            agregarFile(strRuta, [caja])
+                            return True, waste[i][j]
+                    #fin del if sobre candigatos
+                #ultima posible instruccion para el for iria con esa tabulacion
+            #pasaste por todo, nunca entró :'|
+            waste[i][j] = [False]
+            return False, waste[i][j]
+        #over here - fin de def aux
+        #estamos en la (sub)función dentroContenedor(arr, actCont):
+        # que busca:                   ordenar el "arr" dentro del actCont
+        # so... toca aplicar aux hasta que veamos que algo malo pasa
+        # RECORDANDO:
+        #  arr formato:
+        #    [[id, (pos), rot],
+        #     [id, (pos), rot], ...]
+        nice = False
+        dejados = []
+        rutaFin = " "
+        for i in range(nA):
+            #por i desde 0 hasta nA(len de arr)
+            for j in range(6):
+                nice, ruta = aux(i,j)
+                if nice:
+                    #si entró, no busca cambiar de orientación, va a la siguiente caja
+                    rutaFin = ruta # guarda la última ruta que funciona
+                    break
+            if not nice:
+                #si no entró, sáltalo
+                dejados.append(arr[i])
+                continue
+        rutaCont = "cajasContenedor" + actCont + ".txt" #...............................................DON'T FORGET, PARA PASARLO A LA RESPUESTA OFICIAL
+        copiarFile(rutaCont,rutaFin)
+        #pasamos por cada que se deba borrar
+        for i in range(nA):
+            for j in range(6):
+                # borrar archivos:
+                if len(waste[i][j]) == 2:
+                    os.remove(waste[i][j][1])
+        return rutaCont, dejados
+    arrRutas = [] #se va a guardar las rutas de los contenedores
+    fiambre = [None, None, None] # basura for later
+    contFunc = 1
+    while len(fiambre) > 0:
+        auxRuta, fiambre = dentroContenedor(arreglo, contFunc)
+        arrRutas.append(auxRuta)
+        contFunc += 1
 
 
 # In[ ]:
@@ -194,18 +313,11 @@ def backtracking(caja, rotacion):
 backtracking(0, 0)
 
 
-# In[4]:
+# In[ ]:
 
 
-def escribirFile(ruta, arr):
-    f = open(ruta,"a+")
-    for elem in arr:
-        aux = str(elem)
-        aux += " \n"
-        f.write(aux)
-    f.close()
-ej = [5,4,3]
-escribirFile("ejemplo.txt", ej)
+if [(5,4,3)] != False:
+    print("Holi")
 
 
 # In[13]:
@@ -221,14 +333,4 @@ def copiarFile(rutaOG, rutaN):
     fO.close()
     fN.close()
 copiarFile("ejemplo.txt", "auxEj.txt")
-
-
-# In[ ]:
-
-
-import queue as q
-ejem = q.Queue()
-ejem.put(5)
-print(ejem.get())
-print(ejem.get())
 
