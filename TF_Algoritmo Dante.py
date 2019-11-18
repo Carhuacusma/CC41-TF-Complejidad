@@ -299,6 +299,33 @@ def kindaTetris(arreglo, indices, contenedor):
         auxRuta, fiambre = dentroContenedor(arreglo, contFunc)
         arrRutas.append(auxRuta)
         contFunc += 1
+    # =========================================== PASAR A RESPUESTA OFICIAL ===========================================
+    volDisp = contFunc * contenedor[0] * contenedor[1] * contenedor[2]
+    volTA = 0
+    for auxInd in arreglo:
+        _, size = indices[auxInd]
+        volTA += size[0]*size[1]*size[2]
+    porcUsado = (volDisp - volTA)/volDisp
+    porcUsado = (round(porcUsado, 2)) * 100
+    #------------------------ Escribir en txt Respuesta
+    rutaRes = "resultadoAlgoritmoDante.txt"
+    fR = open(rutaRes,"w+")
+    auxToWrite = "Contenedores usados: " + str(contFunc) + "\n" + "Volumen disponible: " + str(volDisp) + "m2 "
+    auxToWrite += "(" + str(porcUsado) + "%) \n" + "Cajas a transportar: " + str(n)
+    auxToWrite += "Contenedor   Formato   Coordenadas   Orientacion"   
+    fR.write(auxToWrite)
+    contFunc = 1
+    for auxRuta in arrRutas:
+        f = open(auxRuta,"r+")
+        auxLineas = f.readlines()
+        for linea in auxLineas:
+            idNum, posX, posY, posZ, _, _, _, rot = linea.split(" ")
+            auxToWrite = str(contFunc) + "            " + str(indices[idNum][0]) + "         " + "("
+            auxToWrite += str(posX) + ";" + str(posY) + ";" + str(posZ) + ")" + "       " + str(rot)
+            fR.write(auxToWrite)
+        contFunc += 1
+        # ya lo leyó, so... let's erase it
+        os.remove(auxRuta)
 
 
 # In[ ]:
