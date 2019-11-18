@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[20]:
+# In[5]:
 
 
 import os
@@ -11,7 +11,12 @@ import os
 #             ['B', (size.x,size.y,size.z)], ...]
 def kindaTetris(arreglo, indices, contenedor):
     n = len(arreglo)
-    
+    print("Se desean ordenar los rectangulos: ")
+    print(arreglo)
+    print("Cuyos tipos son: ")
+    print(indices)
+    print("En un contenedor de: ")
+    print(contenedor)
     #        max med min
     # rot 0:  X   Y   Z
     # rot 1:  X   Z   Y
@@ -20,22 +25,43 @@ def kindaTetris(arreglo, indices, contenedor):
     # rot 4:  Z   X   Y
     # rot 5:  Z   Y   X
     def sizeRotacion(idCaja, rot):
-            og1, og2, og3 = indices[idCaja][1]
-            sizeOG = [ og1, og2, og3]
-            sizeOG.sort()
-            if rot == 1:
-                return (sizeOG[2], sizeOG[1], sizeOG[0])
-            elif rot == 2:
-                return (sizeOG[2], sizeOG[0], sizeOG[1])
-            elif rot == 3:
-                return (sizeOG[1], sizeOG[2], sizeOG[0])
-            elif rot == 4:
-                return (sizeOG[0], sizeOG[2], sizeOG[1])
-            elif rot == 5:
-                return (sizeOG[1], sizeOG[0], sizeOG[2])
-            elif rot == 6:
-                return (sizeOG[0], sizeOG[1], sizeOG[2])
-    # ================================ FILES ===============================================
+        og1, og2, og3 = indices[idCaja][1]
+        print(og1)
+        sizeOG = [ og1, og2, og3]
+        sizeOG.sort()
+        if rot == 0:
+            print("Rotacion ")
+            print(rot)
+            print(sizeOG)
+            return (sizeOG[2], sizeOG[1], sizeOG[0])
+        elif rot == 1:
+            print("Rotacion ")
+            print(rot)
+            print(sizeOG)
+            return (sizeOG[2], sizeOG[0], sizeOG[1])
+        elif rot == 2:
+            print("Rotacion ")
+            print(rot)
+            print(sizeOG)
+            return (sizeOG[1], sizeOG[2], sizeOG[0])
+        elif rot == 3:
+            print("Rotacion ")
+            print(rot)
+            print(sizeOG)
+            return (sizeOG[0], sizeOG[2], sizeOG[1])
+        elif rot == 4:
+            print("Rotacion ")
+            print(rot)
+            print(sizeOG)
+            return (sizeOG[1], sizeOG[0], sizeOG[2])
+        elif rot == 5:
+            print("Rotacion ")
+            print(rot)
+            print(sizeOG)
+            return (sizeOG[0], sizeOG[1], sizeOG[2])
+        print("Se mandó una rotación inexistente... por defecto se retorna rot 5")
+        return (sizeOG[0], sizeOG[1], sizeOG[2])
+    # =============================== FILES ===============================================
     # arr formato:
     # [[id, (pos), rot],
     #  [id, (pos), rot], ...]
@@ -43,6 +69,9 @@ def kindaTetris(arreglo, indices, contenedor):
     #  idNum pos.x pos.y pos.z size.x size.y size.z rot
     #  idNum pos.x ...
     def copiarFile(rutaOG, rutaN):
+        print("... Copiar archivo")
+        print(rutaOG)
+        print(rutaN)
         fO = open(rutaOG,"r+")
         fN = open(rutaN,"w+")
         lineas = fO.readlines()
@@ -53,6 +82,9 @@ def kindaTetris(arreglo, indices, contenedor):
         fN.close()
 
     def agregarFile(ruta, arr):
+        print("Agregando")
+        print(arr)
+        print("a " + ruta)
         f = open(ruta,"a+")
         for caja in arr:
             aux = str(caja[0]) + " " # id
@@ -75,7 +107,7 @@ def kindaTetris(arreglo, indices, contenedor):
     def dentroContenedor(arr, actCont):
         # ordenar el "arr" dentro del actCont 
         nA = len(arr)
-        waste = [[None]*6 for _ in range(nA)]
+        waste = [[[0]]*6 for _ in range(nA)]
         # waste[rec i][orientacion] = menor desperdicio al guardar 
         #                             todas las cajas hasta la caja i
         #                             ( de arr )
@@ -83,8 +115,6 @@ def kindaTetris(arreglo, indices, contenedor):
         for j in range(nA):
             waste[0][j] = [(contenedor[0], contenedor[1], contenedor[2])]
             # inicializar para que sin cajas, el máximo es el contenedor en sí
-        dentro = []
-        # la "respuesta" para el contenedor
         def entra(caja, auxWaste):
             # caja = [idNum, (pos), rot]
             # aux waste = [(max x, " y, " z), ruta]
@@ -118,6 +148,7 @@ def kindaTetris(arreglo, indices, contenedor):
             # ------> [(id, pos), (id, pos), ...]
             # tamaño de la caja porque siempre es importante :) 
             sizeCaja = sizeRotacion(arr[i], j)
+            print(sizeCaja)
             strRuta = "aux" + str(i) + "rot" + str(j) + "cont" + str(actCont) + ".txt"
             # ejem: aux1rot0.txt
             if len(waste[i][j]) == 2:
@@ -126,10 +157,12 @@ def kindaTetris(arreglo, indices, contenedor):
             if i == 0:
                 # se asume que no existe caja de mayores dimensiones que el contenedor
                 # si no existe pila, es porque no se ha acomodado nada en ese caso hipotético (garantizado por i = 0)
+                print(type(sizeCaja[1]))
+                print(type(strRuta))
                 waste[i][j] = [(contenedor[0] - sizeCaja[0], contenedor[1] - sizeCaja[1], contenedor[2] - sizeCaja[2]), strRuta]
                 #pila:   idNum, (pos),  rot
-                pila = [arr[i], (0,0,0), j]
-                agregarFile(strRuta, pila)
+                caja = [arr[i], (0,0,0), j]
+                agregarFile(strRuta, [caja])
                 return True, waste[i][j]
             # ---------- revisar si existe un arreglo acomodado de cajas hasta antes de la que queremos
             maxSpace = 0
@@ -172,7 +205,7 @@ def kindaTetris(arreglo, indices, contenedor):
                             pos[k1] = 0
                     #posiciona a la caja en el limite de x o y o z
                     caja = [arr[i], pos, j]
-                    if entra(caja,waste[i-1][jAux]):+
+                    if entra(caja,waste[i-1][jAux]):
                         waste[i][j][0][k] -= sizeCaja[k]
                         #Waste en k disminuye el tamaño de la nueva caja en k
                         for k1 in range(3):
@@ -270,20 +303,34 @@ def kindaTetris(arreglo, indices, contenedor):
         #     [id, (pos), rot], ...]
         nice = False
         dejados = []
-        rutaFin = " "
+        rutaFin = "Mistake.txt"
+        #------- Moment of truth INSIDE CONTAINER ----------------------
         for i in range(nA):
             #por i desde 0 hasta nA(len de arr)
             for j in range(6):
                 nice, ruta = aux(i,j)
+                # colocar la caja num i en orientacion j 
                 if nice:
                     #si entró, no busca cambiar de orientación, va a la siguiente caja
+                    print(ruta)
                     rutaFin = ruta # guarda la última ruta que funciona
                     break
             if not nice:
                 #si no entró, sáltalo
                 dejados.append(arr[i])
+                # NO VA PODER PORQUE EN AUX SE BUSCA AL AUX(i-1,j)
                 continue
-        rutaCont = "cajasContenedor" + actCont + ".txt" #...............................................DON'T FORGET, PARA PASARLO A LA RESPUESTA OFICIAL
+        # ------------------------------------------------------ CONTINGENCIA ----------------------------------------
+        if rutaFin == "Mistake.txt":
+            print("No encontró nada de nada... ")
+            return False
+        if actCont > 10:
+            print("ERROR CRÍTICO!!!!!!!!!!!!! GARBAGE OVERFLOW")
+            return False
+        # ------------------------------------------------------ CONTINGENCIA ----------------------------------------
+        rutaCont = "cajasContenedor" + str(actCont) + ".txt"
+        fAux = open(rutaCont, "w+")
+        fAux.close()
         copiarFile(rutaCont,rutaFin)
         #pasamos por cada que se deba borrar
         for i in range(nA):
@@ -293,10 +340,11 @@ def kindaTetris(arreglo, indices, contenedor):
                     os.remove(waste[i][j][1])
         return rutaCont, dejados
     arrRutas = [] #se va a guardar las rutas de los contenedores
-    fiambre = [None, None, None] # basura for later
+    fiambre = arreglo # aun no se ha colocado nada, todos en fiambre :) 
     contFunc = 1
     while len(fiambre) > 0:
-        auxRuta, fiambre = dentroContenedor(arreglo, contFunc)
+        auxRuta, fiambre = dentroContenedor(fiambre, contFunc)
+        print(auxRuta)
         arrRutas.append(auxRuta)
         contFunc += 1
     # =========================================== PASAR A RESPUESTA OFICIAL ===========================================
@@ -326,38 +374,9 @@ def kindaTetris(arreglo, indices, contenedor):
         contFunc += 1
         # ya lo leyó, so... let's erase it
         os.remove(auxRuta)
-
-
-# In[ ]:
-
-
-# PSEUDOCÓDIGO DE LO QUE DEBERÍA HACER AUX SI BACKTRACKING
-# PERO ÑÑÑ
-arr = [] # cajas en el contenedor
-def backtracking(caja, rotacion):
-    if backtracking(caja + 1, rotacion):
-        
-backtracking(0, 0)
-
-
-# In[ ]:
-
-
-if [(5,4,3)] != False:
-    print("Holi")
-
-
-# In[13]:
-
-
-def copiarFile(rutaOG, rutaN):
-    fO = open(rutaOG,"r+")
-    fN = open(rutaN,"w+")
-    lineas = fO.readlines()
-    for linea in lineas:
-        print(linea)
-        fN.write(linea)
-    fO.close()
-    fN.close()
-copiarFile("ejemplo.txt", "auxEj.txt")
+    return
+indicesEjem = [['A', (5,4,3)],['B', (2,2,3)]]
+contenedorEj = [10,10,10]
+arregloEjem = [0,0,1]
+kindaTetris(arregloEjem, indicesEjem, contenedorEj)
 
