@@ -1,12 +1,10 @@
-import heapq as hq
-
 cn = []     #Cajas que no entran en el contenedor
 cc = []     #Cajas que están en el contenedor
 
 def BuscarEspacioDisponible(PlanoAB, dimensionA, dimensionB):
     d = 0 #Espacio disponible
-    for i in range(dimensionA):
-        for j in range(dimensionB):
+    for i in range(dimensionB):
+        for j in range(dimensionA):
             if PlanoAB[i][j] == 0:
                 d += 1
     return d
@@ -14,8 +12,8 @@ def BuscarEspacioDisponible(PlanoAB, dimensionA, dimensionB):
 def ColocarCaja(PlanoAB, dimensionA, dimensionB, limiteA, limiteB):
     e = 0
     d = 0
-    for i in range(dimensionA):
-        for j in range(dimensionB):
+    for i in range(dimensionB):
+        for j in range(dimensionA):
             if PlanoAB[i][j] == 0:
                 e = i
                 d = j
@@ -27,87 +25,100 @@ def ColocarCaja(PlanoAB, dimensionA, dimensionB, limiteA, limiteB):
         for k in range(limiteB):
             PlanoAB[r][k] = 1
 
-def AlgoritmoNatalia(Ancho, Alto, Largo, MyRec, cc, cn):
+def EspacioUtilizado(PlanoAB, DimensionA, DimensionB):
+    d = 0
+    
+    for i in range(DimensionB):
+        for j in range(DimensionA):
+            if PlanoAB[i][j] == 1:
+                d += 1
+    return d
+
+def AlgoritmoNatalia(MyRec, cc, cn):
+    Ancho = Contenedores[1]
+    Largo = Contenedores[0]
+    Alto = Contenedores[2]
     
     #Representación del contenedor y su espacio disponible
-    PlanoXY = [[0] * ancho for _ in range(largo)]
-    PlanoXZ = [[0] * ancho for _ in range(alto)]
-    PlanoYZ = [[0] * largo for _ in range(alto)]
+    PlanoXY = [[0] * Ancho for _ in range(Largo)]
+    PlanoXZ = [[0] * Ancho for _ in range(Alto)]
+    PlanoYZ = [[0] * Largo for _ in range(Alto)]
         
     #Variables:
-    v = Ancho * Alto * Largo     #volumen del contenedor
-    vo = 0                       #volumen ocupado del contenedor
-    vd = v                       #volumen disponible del contenedor
-    c = 0                        #Cantidad de contenedores usados
-    m = len(cc)                  #Cantidad de cajas a transportar/encuentran en el contenedor
-    dxy = 0                      #Cantidad de espacio disponible en el plano xy
-    dxz = 0                      #Cantidad de espacio disponible en el plano xz
-    dyz = 0                      #Cantidad de espacio disponible en el plano yz
+    v = int(Ancho) * int(Alto) * int(Largo)     #volumen del contenedor
+    vo = int(0)                                 #volumen ocupado del contenedor
+    vd = int(v)                                 #volumen disponible del contenedor
+    c = 1                                       #Cantidad de contenedores usados
+    m = len(cc)                                 #Cantidad de cajas a transportar/encuentran en el contenedor
+    dxy = 0                                     #Cantidad de espacio disponible en el plano xy
+    dxz = 0                                     #Cantidad de espacio disponible en el plano xz
+    dyz = 0                                     #Cantidad de espacio disponible en el plano yz
+    vc = int(0)                                 #Volumen de la caja a evaluar
+    avc = int(0)                                #Volumen de la caja del vector cn a evaluar
     
+    
+    print("Volumen del contenedor: ", v)
     #Colocar las cajas: Aquí no sé muy bien qué hacer todavia 
     for i in range(len(MyRec)):
-        vc = MyRec[i].largo * MyRec[i].alto * MyRec[i].ancho #Volumen de la caja
+        #Se ha puesto esto para ver qué se está multiplicando y que los valores sean los correctos
+        print("Largo: ", MyRec[i].largo)
+        print(type(MyRec[i].largo))
+        
+        print("Ancho: ", MyRec[i].ancho)
+        print(type(MyRec[i].ancho))
+        
+        print("Alto: ", MyRec[i].alto)
+        print(type(MyRec[i].alto))
+        
+        print("Volumen disponible: ", vd)
+
+        vc = int(MyRec[i].largo * MyRec[i].alto * MyRec[i].ancho) #Volumen de la caja
+        
+        #Validar que se está realizando el cálculo:
+        print("Volumen caja: ", vc)
         
         if vc <= vd:
-            dxy = BuscarEspacioDisponible(PlanoXY, ancho, largo)
-            dyz = BuscarEspacioDisponible(PlanoYZ, largo, alto)
-            dxz = BuscarEspacioDisponible(PlanoXZ, ancho, alto)
+            dxy = BuscarEspacioDisponible(PlanoXY, Ancho, Largo)
+            dyz = BuscarEspacioDisponible(PlanoYZ, Largo, Alto)
+            dxz = BuscarEspacioDisponible(PlanoXZ, Ancho, Alto)
             
-            if MyRec[i].ancho <= dxy && MyRec[i].largo <= dyz &&  MyRec[i].alto <= dxz:
-                ColocarCaja(PlanoXY, ancho, largo, MyRec[i].ancho, MyRec[i].largo)
-                ColocarCaja(PlanoYZ, largo, alto, MyRec[i].largo, MyRec[i].alto)
-                ColocarCaja(PlanoXZ, ancho, largo, MyRec[i].ancho, MyRec[i].alto)
+            if MyRec[i].ancho <= dxy and MyRec[i].largo <= dyz and  MyRec[i].alto <= dxz:
+                ColocarCaja(PlanoXY, Ancho, Largo, MyRec[i].ancho, MyRec[i].largo)
+                ColocarCaja(PlanoYZ, Largo, Alto, MyRec[i].largo, MyRec[i].alto)
+                ColocarCaja(PlanoXZ, Ancho, Largo, MyRec[i].ancho, MyRec[i].alto)
                 cc.append(MyRec[i])
                 vd -= vc
+                print("Volumen disponible: ", vd)
         
         else:
             for j in range(len(cn)):
                 avc = cn[j].ancho * cn[j].alto * cn[j].largo
+                print("Volumen caja auxiliar: ", avc)
                 if avc <= vd:
-                    if cn[i].ancho <= dxy && cn[j].largo <= dyz && cn[i].alto <= dxz:
-                        ColocarCaja(EjeX, cn[j].ancho)
-                        ColocarCaja(EjeY, cn[j].largo)
-                        ColocarCaja(EjeZ, cn[j].alto)
+                    if cn[i].ancho <= dxy and cn[j].largo <= dyz and cn[i].alto <= dxz:
+                        ColocarCaja(PlanoXY, Ancho, Largo, cn[i].ancho, cn[j].largo)
+                        ColocarCaja(PlanoYZ, Largo, Alto, cn[i].largo, cn[j].largo)
+                        ColocarCaja(PlanoXZ, Ancho, Alto, cn[i].ancho, cn[j].alto)
                         cc.append(cn[i])
                         del cn[i]
                         vd -= avc
+                        print("Volumen disponible: ", vd)
                 
                 else:
+                    print("no entró")
                     cn.append(MyRec[i])
+        print("iteración #: ", i)
+    
+    #Forma 3 de obtener el vo
+    print("V:", v)
+    print("VD: ", vd)
+    vo = v - vd
     
     
-    #Forma 1 de obtener el vo
-    for i in range(m):
-        vo += cc[i].ancho * cc[i].largo * cc[i].alto
-    
-    
-    #Forma 2 de obtener el vo
-    contx = 0
-    conty = 0
-    contz = 0
-    
-    for i in range(len(EjeX)):
-        if EjeX[i] == 1:
-            contx += 1
-    
-    for i in range(len(EjeY)):
-        if EjeY[i] == 1:
-            conty += 1
-            
-    for i in range(len(EjeZ)):
-        if EjeZ[i] == 1:
-            contz += 1
-    
-    vo = contx * conty * contz
-    
-    #Obtener el vd
-    vd = v - vo
+    print("El volumen utilizado es: ", vo)
+    print("El volumen disponible es: ", vd)
+    print("La cantidad de contenedores usados es: ", c)
+    print("La cantidad de cajas a transportar son: ", m)
+    print("Las cajas a transportar son: ", cc)
     
     return vo, c, vd, m
-    
-    
-    
-    
-    
-    
-    
