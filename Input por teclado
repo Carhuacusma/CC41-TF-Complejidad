@@ -21,7 +21,7 @@ def inputTeclado():
         d = int(input("Cuantos tipos de la misma caja hay: "))
         
         for j in range(d):
-            MyRec.append(Paralelepipedo(Mid, x, y, z)) 
+            MyRec.append(Paralelepipedo(x, y, z, Mid)) 
             cont += 1
             if cont == n:
                 break
