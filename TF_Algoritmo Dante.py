@@ -204,13 +204,13 @@ def kindaTetris(arreglo, indices, contenedor):
                 # si no hay cálculos wich is weird but ok,
                 print(" No había ningun ordenamiento que tenga la caja anterior")
                 bien = False
-                while not fine and jAux < 7:
+                while not bien and jAux < 7:
                     print("Calculando para caja anterior (" + str(i-1) + ") con rotacion " + str(jAux))
                     bien, _ = aux(i-1,jAux)
                     #si nunca entró al if != None -> jAux = 0
                     jAux += 1
                 jAux -= 1
-                if not fine:
+                if not bien:
                     print("Calculó todas las opciones, nunca entró, Regresa False")
                     waste[i-1][jAux] = [False]
                     return False, waste[i-1][jAux]
