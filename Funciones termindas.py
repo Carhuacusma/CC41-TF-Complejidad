@@ -3,7 +3,7 @@ import numpy as np
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection, Line3DCollection
-
+import matplotlib.colors as colors
 
 class Paralelepipedo:
     def __init__(self,largo, ancho, alto, Myid):
@@ -29,35 +29,99 @@ Contenedores = []#arreglo de arrglo de largo,ancho,alto,volumen
 Respuestas = [] #no es la respuesta jsjs
 cont = 0
 Ulti = [0,0,0] # ultimas posiciones usadas x,y,z
-def Ponido(ulti,cont):#basicamente algoritmo galvan // le pasas las ultimas coordenas de cada eje
-    if len(MyRec) > cont[0]:
-        #x
-        if ulti[0] + MyRec[cont[0]].largo <= Contenedores[-1][0]:
-            MyRec[cont[0]].Pos = (ulti[0] + MyRec[cont[0]].largo,ulti[1],ulti[2]) #ponido(x+Puesto[cont].largo,y,z,cont+1
-            ulti[0] += MyRec[cont[0]].largo
-        elif ulti[0] + MyRec[cont[0]].largo > Contenedores[-1][0]:
-            ulti[0] = 0
-            Ponido(ulti,cont)
-        #y   
-        elif ulti[1] + MyRec[cont].ancho <= Contenedores[-1][1]:
-            MyRec[cont[0]].Pos  = (ulti[0],ulti[1] + MyRec[cont[0]].ancho,ulti[2])
-            ulti[1] += MyRec[cont[0]].ancho
-        elif ulti[1] + MyRec[cont[0]].ancho > Contenedores[-1][1]:
-            ulti[1] = 0 
-            Ponido(ulti,cont)
-        #Z   
-        elif ulti[2] + MyRec[cont].alto <= Contenedores[-1][2]:
-            MyRec[cont[0]].Pos  = (ulti[0],ulti[1],ulti[2] + MyRec[cont[0]].alto)
-            ulti[2] += MyRec[cont[0]].alto
-        elif ulti[2] + MyRec[cont[0]].ancho > Contenedores[-1][2]:
-            ulti[2] = 0
-            Ponido(ulti,cont)
-        else:
-            ponido(x+Puesto[cont[0]].largo,y,z,cont+1)#cuidado con el cont+1 hmm
+namae = ["Prueba_1"]
+def Ponido(cont):#basicamente algoritmo galvan // le pasas las ultimas coordenas de cada eje
+    towers = []
+    def Rotacion():
+        a = Contenedores[-1][0]
+        b = Contenedores[-1][1]
+        c = Contenedores[-1][2]
+        orden = [a,b,c]
+        orden.sort(reverse=True)
+        Contenedores[-1][0] = orden[0]
+        Contenedores[-1][1] = orden[1]
+        Contenedores[-1][2] = orden[2]
+        n = len(MyRec)
+        for i in range(n):
+            for h in range(len(MyRec[i])):
+                x = MyRec[i][h].largo
+                y = MyRec[i][h].ancho
+                z = MyRec[i][h].alto
+                orden = [x,y,z] #Preguntar por la rotacion
+                orden.sort(reverse=True)
+                MyRec[i][h].largo = orden[0]
+                MyRec[i][h].ancho = orden[1]
+                MyRec[i][h].alto  = orden[2]
+        MyRec.sort(key = lambda x: x[0].ancho,reverse = True)
+        MyRec.sort(key = lambda x: x[0].largo,reverse = True)
+        #MyRec.sort(key = lambda x: x[0].alto)
+        
 
+
+    def Eachtower(Contenedor,Pos,uno,dos): #COnstruye toda la torre
+        altura = 0
+        for x in range(uno[0],len(MyRec)):
+            for h in range(dos[0],len(MyRec[x])):
+                if altura + MyRec[x][h].alto <= Contenedor[-1][2] and MyRec[x][h].ancho <= Contenedor[-1][1]:
+                    MyRec[x][h].Pos = (Pos[0]+((Contenedor[-1][0])*(len(Contenedor)-1)),Pos[1],altura)
+#                     MyRec[x][h].Pos = (Pos[0],Pos[1],altura)
+                    
+#                     print("Eachtowe c/e Pos = ",MyRec[x][h].Pos)
+                    altura += MyRec[x][h].alto 
+                    #agregar a tower para ordenar despues.
+                else: 
+                    return x,h
+        return len(MyRec),len(MyRec)
+            
+    def towers(Contenedor):
+        i = [0]
+        LineStart = MyRec[0][0]
+        x = [0]
+        y = [0]
+        a = [0]
+        b = [0]
+        for p in range(len(MyRec)):
+            for h in range(len(MyRec[p])):
+                
+                uno = [p]
+                dos = [h]
+                
+                if p != a[0]:
+                    continue
+                elif h != b[0]:
+                    continue
+                
+#                 print(x[0] + MyRec[p][h].largo, (Contenedor[-1][0]) + ((len(Contenedor)-1)*5))
+                if (x[0] + MyRec[p][h].largo) <= ((Contenedor[-1][0]) + ((len(Contenedor)-1)*5)) and (y[0] + MyRec[p][h].ancho<= Contenedor[-1][1]):
+                    pos = [x[0],y[0],0]
+                    a[0],b[0] = Eachtower(Contenedor,pos,uno,dos)
+                    x[0] += MyRec[p][h].largo
+                    
+                else:
+                    x[0] = 0 
+                    if (y[0] + MyRec[p][h].ancho) <= Contenedor[-1][1] and (x[0] + MyRec[p][h].largo) <= ((Contenedor[-1][0]) + ((len(Contenedor)-1)*5)):
+#                         print(MyRec[p][h].Myid,x[0],y[0] + MyRec[p][h].ancho)
+                        y[0] += LineStart.ancho
+                        pos = [x[0],y[0],0]
+                        a[0],b[0] = Eachtower(Contenedor,pos,uno,dos)
+                        LineStart = MyRec[p][h]
+                        
+                    else:
+#                         print("New container",MyRec[p][h].Myid,x[0],y[0] + MyRec[p][h].ancho)
+                        Contenedor.append(Contenedor[0])
+                        y[0] = 0
+                        x[0] = 5
+                        
+#                         x[0] = ((x[0]+Contenedor[-1][0])*(len(Contenedor)-1))
+                        pos = [x[0],y[0],0]
+                        a[0],b[0] = Eachtower(Contenedor,pos,uno,dos)#maybe
+                
+    Rotacion()
+    towers(Contenedores)
+    Display3D()
 
 def leerTxD(cont):
-    archivo = open("Entrada.txt","r")
+    archivo = open(namae[0] ,"r")
     n = archivo.readlines() 
     for i in n:
         contenedor = i
@@ -111,6 +175,7 @@ def Guardar():
             
 def GenerarArchivo():
     nombreArchivo = input("Ingrese el nombre del archivo: ")
+    namae[0] = nombreArchivo
     archivoGenerado = open(nombreArchivo, 'w+')
     n = random.randint(1,10) #Cantidad de cajas
     
@@ -156,7 +221,7 @@ def GenerarArchivo():
         
         tipo += 1
         archivoGenerado.write(a + " "+ t + " "+ b + " " + d + " " + e + "\n") 
-
+    leerTxD(0)
 
 def Display3D():
     fig = plt.figure()
@@ -191,36 +256,58 @@ def Display3D():
     for i in range(len(Contenedores)):
         extra = Contenedores[i][0]*i
         #     0,0,0  x,0,0                      0,y,0             0,0,z                        x,y,0                      x,0,z                     0,y,z               x,y,z
-        xCont += [0 ,Contenedores[i][0] + extra,0 +extra          ,0 + extra                  ,Contenedores[i][0] + extra,Contenedores[i][0] + extra,0 + extra         ,Contenedores[i][0]+extra,Contenedores[i][0] + extra,0                 ,0]  
-        yCont += [0, 0                        ,Contenedores[i][1],0                          ,Contenedores[i][1]        ,0                         ,Contenedores[i][1],Contenedores[i][1]       ,0                         ,Contenedores[i][1],Contenedores[i][1]  ]
-        zCont += [0, 0                        ,0                 ,Contenedores[i][2]         ,0                         ,Contenedores[i][2]        ,Contenedores[i][2],Contenedores[i][2]       ,0                         ,0                 ,Contenedores[i][2] ]
+#         xCont += [0 ,Contenedores[i][0] + extra,0 +extra          ,0 + extra                  ,Contenedores[i][0] + extra,Contenedores[i][0] + extra,0 + extra         ,Contenedores[i][0]+extra,Contenedores[i][0] + extra,0                 ,0]  
+#         yCont += [0, 0                        ,Contenedores[i][1],0                          ,Contenedores[i][1]        ,0                         ,Contenedores[i][1],Contenedores[i][1]       ,0                         ,Contenedores[i][1],Contenedores[i][1]  ]
+#         zCont += [0, 0                        ,0                 ,Contenedores[i][2]         ,0                         ,Contenedores[i][2]        ,Contenedores[i][2],Contenedores[i][2]       ,0                         ,0                 ,Contenedores[i][2] ]
+        xCont += [(0+Contenedores[i][0]+5)*i]
+        yCont += [0]
+        zCont += [0]
+    
+        dxCont += [Contenedores[i][0]]
+        dyCont += [Contenedores[i][1]]
+        dzCont += [Contenedores[i][2]]
+#                  #0,0,0               x,0,0                 0,y,0                0,0,z                 x,y,0                x,0,z                0,y,z               x,y,z 
+#         dxCont += [0.1               ,(-Contenedores[i][0]),0.1                  ,(Contenedores[i][0]),0.1                 ,0.1                  ,0.1                 ,0.1    ,0.1               ,Contenedores[i][0],Contenedores[i][0]]
+#         dyCont += [0.0001,0.0001     ,(-Contenedores[i][1]),0.0001              ,0.0001              ,0.0001        ,(-Contenedores[i][1]),(-Contenedores[i][1]),Contenedores[i][1],0.0001            ,0.0001]
+#         dzCont += [Contenedores[i][2],0.1                  ,0.1                  ,0.1                 ,(Contenedores[i][2]),(-Contenedores[i][2]),0.1                 ,0.1    ,0.1               ,0.1               ,0.1]
+#                                       #Hasta este esta ok  ]
         
-                 #0,0,0               x,0,0                 0,y,0                0,0,z                 x,y,0                x,0,z                0,y,z               x,y,z 
-        dxCont += [0.1               ,(-Contenedores[i][0]),0.1                  ,(Contenedores[i][0]),0.1                 ,0.1                  ,0.1                 ,0.1    ,0.1               ,Contenedores[i][0],Contenedores[i][0]]
-        dyCont += [0.0001,0.0001     ,(-Contenedores[i][1]),0.0001              ,0.0001              ,0.0001        ,(-Contenedores[i][1]),(-Contenedores[i][1]),Contenedores[i][1],0.0001            ,0.0001]
-        dzCont += [Contenedores[i][2],0.1                  ,0.1                  ,0.1                 ,(Contenedores[i][2]),(-Contenedores[i][2]),0.1                 ,0.1    ,0.1               ,0.1               ,0.1]
-                                      #Hasta este esta ok  ]
+    
     
     ax1.set_xlabel('X')
     ax1.set_ylabel('Y')
     ax1.set_zlabel('Z')
     
-    ax1.bar3d(xpos, ypos, zpos, dx, dy, dz, color = '#00ceaa', alpha = '0.9')
-    ax1.bar3d(xCont, yCont, zCont, dxCont, dyCont, dzCont, color = 'magenta', alpha = 0.5)
+    
+#     color = ['green','yellow','blue','black','red','pink' ,'orange'] #,'brown' , 'cyan']
+    ax1.bar3d(xpos, ypos, zpos, dx, dy, dz , alpha = '1')
+    ax1.bar3d(xCont, yCont, zCont, dxCont, dyCont, dzCont, color = 'magenta', alpha = 0.1)
+    
+#     for i in range(360):
+    ax1.view_init(30, -45)
+#         fig.draw()
+#         plt.pause(.001)
 
     plt.show()
-    
     
 def inputTeclado():
     largo = int(input("Ingrese el largo del contenedor: "))
     ancho = int(input("Ingrese el ancho del contenedor: "))
     alto  = int(input("Ingrese el alto  del contenedor: "))
     
-    Contenedores.append(largo)
-    Contenedores.append(ancho)
-    Contenedores.append(alto) 
+    Contene = []
+    Contene.append(largo)
+    Contene.append(ancho)
+    Contene.append(alto)
+    Contene.append(alto*ancho*largo)
+    Contenedores.append(Contene)
     
-    n = int(input("Cantidad de cajas: "))
+#     Contenedores.append(largo)
+#     Contenedores.append(ancho)
+#     Contenedores.append(alto)
+#     Contenedores.append(alto*ancho*largo)
+    
+    n = int(input("Cantidad de tipos de cajas: "))
     cont  = 0 #Validar la cantidad de cajas
     
     
@@ -231,19 +318,20 @@ def inputTeclado():
         y = int(input("Ingrese el ancho de la caja: "))
         z = int(input("Ingrese el alto de la caja: "))
         Mid = input("Ingrese el tipo de la caja: ")
-        d = int(input("Cuantos tipos de la misma caja hay: "))
-        
+        d = int(input("Cuantos cajas del mismo tipo hay: "))
+        helpm = []
         for j in range(d):
-            MyRec.append(Paralelepipedo(x, y, z, Mid)) 
+            helpm.append(Paralelepipedo(x, y, z, Mid)) 
+#             MyRec.append(Paralelepipedo(x, y, z, Mid)) 
             cont += 1
             if cont == n:
                 break
-        
+        MyRec.append(helpm)
         if cont == n:
                 break    
     
 
- cn = []     #Cajas que no entran en el contenedor
+cn = []     #Cajas que no entran en el contenedor
 cc = []     #Cajas que están en el contenedor
 
 def BuscarEspacioDisponible(PlanoAB, dimensionA, dimensionB):
@@ -768,7 +856,7 @@ def Menu():
     print(" 2. Ingresar datos                   ")
     print(" 3. Generar archivo aleatorio        ")
     op = [0]
-    while op[0] > 2 or op[0] < 1:
+    while op[0] > 3 or op[0] < 1:
         op[0] = int(input())
     if op[0] == 1:
         # LLAMAR A FUNCION QUE LEE ARCHIVO
@@ -777,7 +865,7 @@ def Menu():
         
     elif op[0] == 2:
         print("Teclado")
-        intpurTeclado()
+        inputTeclado()
         # LLAMAR A FUNCION QUE LEE POR TECLADO
     elif op[0] == 3:
         print("archivo aleatorio: ")
@@ -799,7 +887,7 @@ def Menu():
             # LLAMAR AL ALGORITMO MAURY
         elif op[0] == 2:
             print("Implementar Galván")
-            # LLAMAR AL ALGORITMO GALVÁN
+            Ponido(cont)
         elif op[0] == 3:
             print("Implementar Moreno")
             # ACOMODAR PARÁMETROS
@@ -811,6 +899,5 @@ def Menu():
     while op[0] != 4:
         selecAlgo()
     
-leerTxD(cont)
-Guardar()
-Display3D()
+
+Menu()
