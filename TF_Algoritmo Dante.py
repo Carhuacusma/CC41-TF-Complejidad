@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[9]:
+# In[3]:
 
 
 import os
@@ -9,6 +9,16 @@ import os
 #             ind ... ]
 # indices = [ ['A', (size.x,size.y,size.z)], 
 #             ['B', (size.x,size.y,size.z)], ...]
+
+# =============================== WARNING ==================== 
+# UN CARACTER DE MÁS GUARDADO EN UN ARCHIVO PROVOCA COLAPSO
+# BORRAR ARCHIVOS CREADOS LUEGO DE CADA EJECUCIÓN
+# EL COLAPSO NO DEJA ENTRAR AL DESTRUCTOR
+# --- PRINTS PARA UBICAR. EN COPIAR ARREGLO SE VE, VIENE DE ANTES EL FALLO
+# --- REVISAR FUNCIÓN agregarFile() QUE ES LA ÚNICA QUE DEBERÍA PROVOCAR ESTO (MODO "A+")
+# --- EL MODO APPEND PROVOCA QUE A MÁS EJECUCIONES, PEOR.
+# =====================================================================================================
+
 def kindaTetris(arreglo, indices, contenedor):
     n = len(arreglo)
     print("Se desean ordenar los rectangulos: ")
@@ -26,12 +36,15 @@ def kindaTetris(arreglo, indices, contenedor):
     # rot 5:  Z   Y   X
     def sizeRotacion(idCaja, rot):
         og1, og2, og3 = indices[idCaja][1]
+        print("Size OG como arreglo por el SORT -- primer elem:")
         print(og1)
+        print(type(og1))
         sizeOG = [ og1, og2, og3]
         sizeOG.sort()
         if rot == 0:
             print("Rotacion ")
             print(rot)
+            print("Nuevos -tamaños")
             print(sizeOG)
             return (sizeOG[2], sizeOG[1], sizeOG[0])
         elif rot == 1:
@@ -87,6 +100,8 @@ def kindaTetris(arreglo, indices, contenedor):
         print("a " + ruta)
         f = open(ruta,"a+")
         for caja in arr:
+            print("Escribir caja: ")
+            print(caja)
             aux = str(caja[0]) + " " # id
             f.write(aux)
             posAux = caja[1]
@@ -180,23 +195,30 @@ def kindaTetris(arreglo, indices, contenedor):
                 print("Revisando si entró la caja anterior en rot " + str(k))
                 #por cada una las rotaciones en las que pudo entrar la caja anterior
                 if waste[i-1][j] != None and waste[i-1][j][0] != False:
+                    print("Sí había entrado la caja anterior" + str(i-1) + " en rotación" + str(k))
                     # si ya hay una pila de cajas ordenadas en el caso hipotético hasta la caja anterior, usamos esa
                     maxSpace, _ = waste[i-1][j]
                     jAuxCalc = j
                     break
             if maxSpace == 0:
                 # si no hay cálculos wich is weird but ok,
+                print(" No había ningun ordenamiento que tenga la caja anterior")
                 bien = False
                 while not fine and jAux < 7:
+                    print("Calculando para caja anterior (" + str(i-1) + ") con rotacion " + str(jAux))
                     bien, _ = aux(i-1,jAux)
                     #si nunca entró al if != None -> jAux = 0
                     jAux += 1
                 jAux -= 1
                 if not fine:
+                    print("Calculó todas las opciones, nunca entró, Regresa False")
                     waste[i-1][jAux] = [False]
                     return False, waste[i-1][jAux]
+
             maxSpace, strRutaPrevia = waste[i-1][jAux]
-            
+            print("El maxSpace para guardar la caja " + str(i) + " rot " + str(k))
+            print(maxSpace)
+            print("La ruta que guarda la kinda pila :" + strRutaPrevia)
             pos = [0,0,0]
             #Python con todo lo que dice... NO SOPORTA ASIGNACIONES EN TRIPLETAS (N-etas)
             waste[i][j] = [pos, strRuta]
